@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/foxbit19/todo-app/server/src/store"
 )
 
 func main()  {
-	handler := http.HandlerFunc(TodoServer)
+	server := &TodoServer{&store.InMemoryItemStore{}}
 	const port int = 8000
 	fmt.Printf("Starting server at port %d\n",port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), handler))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), server))
 }
