@@ -8,6 +8,10 @@ func (s *InMemoryItemStore) GetItem(id int) *model.Item {
 	panic("No implementation here")
 }
 
+func (s *InMemoryItemStore) GetItems() *[]model.Item {
+	panic("No implementation here")
+}
+
 func (s *InMemoryItemStore) StoreItem(description string) {
 	panic("No implementation here")
 }

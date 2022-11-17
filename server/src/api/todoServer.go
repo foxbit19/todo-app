@@ -45,6 +45,14 @@ func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
+	arg := strings.TrimPrefix(r.URL.Path, "/items/")
+
+	if arg == "" {
+		// returns all the items
+		json.NewEncoder(w).Encode(s.store.GetItems())
+		return
+	}
+
 	id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/items/"))
 
 	if id == 0 {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -26,6 +27,10 @@ func (s *StubItemStore) GetItem(id int) *model.Item {
 	return nil
 }
 
+func (s *StubItemStore) GetItems() *[]model.Item {
+	return &s.todo
+}
+
 func (s *StubItemStore) StoreItem(description string) {
 	s.todo = append(s.todo, model.Item{
 		Id: len(s.todo)+1,
@@ -37,6 +42,11 @@ func (s *StubItemStore) StoreItem(description string) {
 func newGetTodoRequest(id int) *http.Request {
 	// Creates a new GET request on "items" without a body (nil)
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/items/%d", id), nil)
+	return request
+}
+
+func newGetAllTodosRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/items/", nil)
 	return request
 }
 
@@ -61,6 +71,17 @@ func assertResponseStatus(t *testing.T, got int, want int) {
 
 func assertAndGetJsonResponse(t *testing.T, b *bytes.Buffer) *model.Item {
 	var got model.Item
+	err := json.NewDecoder(b).Decode(&got)
+
+	if err != nil {
+		t.Errorf("Unable to parse JSON response %q: %v", b, err)
+	}
+
+	return &got;
+}
+
+func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer) *[]model.Item {
+	var got []model.Item
 	err := json.NewDecoder(b).Decode(&got)
 
 	if err != nil {
@@ -117,6 +138,20 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusNotFound)
+	})
+
+	t.Run("Returns all todo items as JSON array", func(t *testing.T) {
+		request := newGetAllTodosRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assertResponseStatus(t, response.Code, http.StatusOK)
+		got := assertAndGetAllJsonResponse(t, response.Body)
+
+		if !reflect.DeepEqual(*got, store.todo) {
+			t.Errorf("got %q, want %q", *got, store.todo)
+		}
 	})
 }
 
