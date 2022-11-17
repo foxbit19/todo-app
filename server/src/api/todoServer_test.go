@@ -70,6 +70,7 @@ func assertResponseStatus(t *testing.T, got int, want int) {
 }
 
 func assertAndGetJsonResponse(t *testing.T, b *bytes.Buffer) *model.Item {
+	t.Helper()
 	var got model.Item
 	err := json.NewDecoder(b).Decode(&got)
 
@@ -81,6 +82,7 @@ func assertAndGetJsonResponse(t *testing.T, b *bytes.Buffer) *model.Item {
 }
 
 func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer) *[]model.Item {
+	t.Helper()
 	var got []model.Item
 	err := json.NewDecoder(b).Decode(&got)
 
@@ -91,9 +93,10 @@ func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer) *[]model.Item {
 	return &got;
 }
 
-func assertContentType(t *testing.T, header string) {
-	if header != "application/json" {
-		t.Errorf("response did not have content-type of application/json, got %v", header)
+func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
+	t.Helper()
+	if response.Result().Header.Get("content-type") != want {
+		t.Errorf("response did not have content-type of %s, got %v", want, response.Result().Header)
 	}
 }
 
@@ -122,7 +125,7 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
-		assertContentType(t, response.Result().Header.Get("content-type"))
+		assertContentType(t, response, "application/json")
 		got := assertAndGetJsonResponse(t, response.Body)
 		assertResponseBody(t, got.Description, "this is my first todo")
 	})
@@ -134,7 +137,7 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
-		assertContentType(t, response.Result().Header.Get("content-type"))
+		assertContentType(t, response, "application/json")
 		got := assertAndGetJsonResponse(t, response.Body)
 		assertResponseBody(t, got.Description, "this is my second todo")
 	})
@@ -155,7 +158,7 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
-		assertContentType(t, response.Result().Header.Get("content-type"))
+		assertContentType(t, response, "application/json")
 		got := assertAndGetAllJsonResponse(t, response.Body)
 
 		if !reflect.DeepEqual(*got, store.todo) {
