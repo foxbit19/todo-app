@@ -1,6 +1,8 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -11,15 +13,25 @@ import (
 )
 
 type StubItemStore struct {
-	todo map[int]string
+	todo []model.Item
 }
 
-func (s *StubItemStore) GetTodoDescription(id int) string {
-	return s.todo[id]
+func (s *StubItemStore) GetItem(id int) *model.Item {
+	for i := 0; i < len(s.todo); i++ {
+		if(s.todo[i].Id == id) {
+			return &s.todo[i]
+		}
+	}
+
+	return nil
 }
 
 func (s *StubItemStore) StoreItem(description string) {
-	s.todo[len(s.todo)+1] = description
+	s.todo = append(s.todo, model.Item{
+		Id: len(s.todo)+1,
+		Description: description,
+		Order: 0,
+	})
 }
 
 func newGetTodoRequest(id int) *http.Request {
@@ -47,11 +59,30 @@ func assertResponseStatus(t *testing.T, got int, want int) {
 	}
 }
 
+func assertAndGetJsonResponse(t *testing.T, b *bytes.Buffer) *model.Item {
+	var got model.Item
+	err := json.NewDecoder(b).Decode(&got)
+
+	if err != nil {
+		t.Errorf("Unable to parse JSON response %q: %v", b, err)
+	}
+
+	return &got;
+}
+
 func TestGETTodoItem(t *testing.T) {
 	store := StubItemStore{
-		map[int]string{
-			1: "this is my first todo",
-			2: "this is my second todo",
+		[]model.Item{
+			{
+				Id: 1,
+				Description: "this is my first todo",
+				Order: 1,
+			},
+			{
+				Id: 2,
+				Description: "this is my second todo",
+				Order: 2,
+			},
 		},
 	}
 	server := NewTodoServer(&store)
@@ -64,8 +95,8 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
-		assertResponseBody(t, response.Body.String(), "this is my first todo")
-
+		got := assertAndGetJsonResponse(t, response.Body)
+		assertResponseBody(t, got.Description, "this is my first todo")
 	})
 
 	t.Run("returns the second todo item", func(t *testing.T) {
@@ -75,7 +106,8 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
-		assertResponseBody(t, response.Body.String(), "this is my second todo")
+		got := assertAndGetJsonResponse(t, response.Body)
+		assertResponseBody(t, got.Description, "this is my second todo")
 	})
 
 	t.Run("returns 404 on missing item", func(t *testing.T) {
@@ -90,7 +122,7 @@ func TestGETTodoItem(t *testing.T) {
 
 func TestStoreTodoItems(t *testing.T) {
 	store := StubItemStore{
-		map[int]string{},
+		[]model.Item{},
 	}
 	server := NewTodoServer(&store)
 
@@ -116,10 +148,10 @@ func TestStoreTodoItems(t *testing.T) {
 		assertResponseStatus(t, response.Code, http.StatusAccepted)
 
 		// verify if the item was correctly stored
-		got := server.store.GetTodoDescription(1)
+		got := server.store.GetItem(1)
 		want := "new todo item"
 
-		if got != want {
+		if got.Description != want {
 			t.Errorf("got %q, want %q", got, want)
 		}
 	})

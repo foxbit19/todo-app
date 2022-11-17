@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -40,7 +41,7 @@ func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 
 	s.store.StoreItem("new todo item")
-	fmt.Fprint(w, s.store.GetTodoDescription(1))
+	fmt.Fprint(w, s.store.GetItem(1))
 }
 
 func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
@@ -50,5 +51,5 @@ func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
-	fmt.Fprint(w, s.store.GetTodoDescription(id))
+	json.NewEncoder(w).Encode(s.store.GetItem(id))
 }
