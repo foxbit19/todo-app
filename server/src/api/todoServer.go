@@ -48,6 +48,7 @@ func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
 	arg := strings.TrimPrefix(r.URL.Path, "/items/")
 
 	if arg == "" {
+		w.Header().Set("content-type", "application/json")
 		// returns all the items
 		json.NewEncoder(w).Encode(s.store.GetItems())
 		return
@@ -59,5 +60,6 @@ func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 
+	w.Header().Set("content-type", "application/json")
 	json.NewEncoder(w).Encode(s.store.GetItem(id))
 }

@@ -91,6 +91,12 @@ func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer) *[]model.Item {
 	return &got;
 }
 
+func assertContentType(t *testing.T, header string) {
+	if header != "application/json" {
+		t.Errorf("response did not have content-type of application/json, got %v", header)
+	}
+}
+
 func TestGETTodoItem(t *testing.T) {
 	store := StubItemStore{
 		[]model.Item{
@@ -116,6 +122,7 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
+		assertContentType(t, response.Result().Header.Get("content-type"))
 		got := assertAndGetJsonResponse(t, response.Body)
 		assertResponseBody(t, got.Description, "this is my first todo")
 	})
@@ -127,6 +134,7 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
+		assertContentType(t, response.Result().Header.Get("content-type"))
 		got := assertAndGetJsonResponse(t, response.Body)
 		assertResponseBody(t, got.Description, "this is my second todo")
 	})
@@ -147,6 +155,7 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
+		assertContentType(t, response.Result().Header.Get("content-type"))
 		got := assertAndGetAllJsonResponse(t, response.Body)
 
 		if !reflect.DeepEqual(*got, store.todo) {
