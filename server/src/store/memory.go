@@ -3,5 +3,9 @@ package store
 type InMemoryItemStore struct {}
 
 func (s *InMemoryItemStore) GetTodoDescription(id int) string {
-	return "todo time!"
+	panic("No implementation here")
+}
+
+func (s *InMemoryItemStore) StoreItem(description string) {
+	panic("No implementation here")
 }
