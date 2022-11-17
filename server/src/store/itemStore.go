@@ -1,6 +1,8 @@
 package store
 
+import "github.com/foxbit19/todo-app/server/src/model"
+
 type ItemStore interface {
-	GetTodoDescription(id int) string
+	GetItem(id int) *model.Item
 	StoreItem(description string)
 }
