@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/foxbit19/todo-app/server/src/model"
+	"github.com/foxbit19/todo-app/server/src/store"
 )
 
 type StubItemStore struct {
@@ -50,8 +50,14 @@ func newGetAllTodosRequest() *http.Request {
 	return request
 }
 
-func newPostTodoRequest(item *model.Item) *http.Request {
-	request, _ := http.NewRequest(http.MethodPost, "/items/", strings.NewReader(item.Description))
+func newPostTodoRequest(t *testing.T, description string) *http.Request {
+	body, buffer := map[string]string{"description": description}, new(bytes.Buffer)
+   	err := json.NewEncoder(buffer).Encode(body)
+	if err != nil {
+		t.Errorf("Unable to encode JSON %q: %v", body, err)
+    }
+
+	request, _ := http.NewRequest(http.MethodPost, "/items/", buffer)
 	return request
 }
 
@@ -81,7 +87,7 @@ func assertAndGetJsonResponse(t *testing.T, b *bytes.Buffer) *model.Item {
 	return &got;
 }
 
-func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer) *[]model.Item {
+func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer, todo *[]model.Item) {
 	t.Helper()
 	var got []model.Item
 	err := json.NewDecoder(b).Decode(&got)
@@ -90,7 +96,9 @@ func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer) *[]model.Item {
 		t.Errorf("Unable to parse JSON response %q: %v", b, err)
 	}
 
-	return &got;
+	if !reflect.DeepEqual(got, *todo) {
+		t.Errorf("got %q, want %q", got, *todo)
+	}
 }
 
 func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
@@ -159,11 +167,7 @@ func TestGETTodoItem(t *testing.T) {
 
 		assertResponseStatus(t, response.Code, http.StatusOK)
 		assertContentType(t, response, "application/json")
-		got := assertAndGetAllJsonResponse(t, response.Body)
-
-		if !reflect.DeepEqual(*got, store.todo) {
-			t.Errorf("got %q, want %q", *got, store.todo)
-		}
+		assertAndGetAllJsonResponse(t, response.Body, &store.todo)
 	})
 }
 
@@ -187,7 +191,7 @@ func TestStoreTodoItems(t *testing.T) {
 			Description: "new todo item",
 		}
 
-		request := newPostTodoRequest(item)
+		request := newPostTodoRequest(t, item.Description)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -201,5 +205,37 @@ func TestStoreTodoItems(t *testing.T) {
 		if got.Description != want {
 			t.Errorf("got %q, want %q", got, want)
 		}
+	})
+}
+
+func TestStoreItemsAndRetrieveThem(t *testing.T) {
+	server := NewTodoServer(&store.InMemoryItemStore{})
+
+	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "I have to do some things, at first"))
+	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "Next, I have other things to do"))
+	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "Lastly, this is the last thing I have to do"))
+
+	t.Run("Get items", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newGetAllTodosRequest())
+
+		assertResponseStatus(t, response.Code, 200)
+		assertAndGetAllJsonResponse(t, response.Body, &[]model.Item{
+			{
+				Id: 1,
+				Description: "I have to do some things, at first",
+				Order: 1,
+			},
+			{
+				Id: 2,
+				Description: "Next, I have other things to do",
+				Order: 2,
+			},
+			{
+				Id: 3,
+				Description: "Lastly, this is the last thing I have to do",
+				Order: 3,
+			},
+		})
 	})
 }
