@@ -1,40 +1,16 @@
 package store
 
 import (
-	"io"
-	"os"
 	"testing"
 
 	"github.com/foxbit19/todo-app/server/src/model"
+	testingCommon "github.com/foxbit19/todo-app/server/src/testing"
 	"gotest.tools/v3/assert"
 )
 
-func createTempFile(t testing.TB, initialData string) (io.ReadWriteSeeker, func()) {
-	t.Helper()
-
-	tmpfile, err := os.CreateTemp("./", "db")
-
-	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
-	}
-
-	_, error := tmpfile.Write([]byte(initialData))
-
-	if error != nil {
-		t.Fatalf("could not write on temp file %v", error)
-	}
-
-	removeFile := func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}
-
-	return tmpfile, removeFile
-}
-
 func TestFileSystemStore(t *testing.T) {
 	t.Run("returns all todo items", func(t *testing.T) {
-		database, cleanDb := createTempFile(t, `[
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
 			{"Id": 1, "Description": "first todo", "Order": 2},
 			{"Id": 2, "Description": "second todo", "Order": 3},
 			{"Id": 3, "Description": "third todo", "Order": 1}
@@ -66,7 +42,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("returns a single todo item", func(t *testing.T) {
-		database, cleanDb := createTempFile(t, `[
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
 			{"Id": 1, "Description": "first todo", "Order": 2},
 			{"Id": 2, "Description": "second todo", "Order": 3},
 			{"Id": 3, "Description": "third todo", "Order": 1}
@@ -85,7 +61,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("store a new todo items", func(t *testing.T) {
-		database, cleanDb := createTempFile(t, `[]`)
+		database, cleanDb := testingCommon.CreateTempFile(t, `[]`)
 		defer cleanDb()
 
 		store := FileSystemStore{database}

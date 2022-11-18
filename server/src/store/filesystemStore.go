@@ -10,7 +10,7 @@ import (
 
 // A FileSystemStore stores todo item into a JSON file.
 type FileSystemStore struct {
-	database io.ReadWriteSeeker
+	Database io.ReadWriteSeeker
 }
 
 // GetItem gets an item of the database using its id.
@@ -68,10 +68,10 @@ func (s *FileSystemStore) findItem(items *[]model.Item, id int) *model.Item {
 // to a concrete object (a slice of model.Item).
 // It returns the slice and an error (if any).
 func (s *FileSystemStore) decodeDatabase() ([]model.Item, error) {
-	s.database.Seek(0, 0)
+	s.Database.Seek(0, 0)
 	var items []model.Item
 
-	err := json.NewDecoder(s.database).Decode(&items)
+	err := json.NewDecoder(s.Database).Decode(&items)
 
 	if err != nil {
 		err = fmt.Errorf("Unable to parse JSON response %v", err)
@@ -85,6 +85,6 @@ func (s *FileSystemStore) decodeDatabase() ([]model.Item, error) {
 // It uses a json encoder to encode the concrete object and marshall it
 // to a ReadWriteSeeker.
 func (s *FileSystemStore) encodeDatabase(items *[]model.Item) {
-	s.database.Seek(0, 0)
-	json.NewEncoder(s.database).Encode(items)
+	s.Database.Seek(0, 0)
+	json.NewEncoder(s.Database).Encode(items)
 }
