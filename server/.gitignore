@@ -19,3 +19,10 @@
 
 # Go workspace file
 go.work
+
+# Avoid to commit binary files
+*/src
+*/server
+
+# Ignore database
+*/todo.db.json
