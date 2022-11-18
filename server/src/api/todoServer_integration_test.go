@@ -7,6 +7,7 @@ import (
 	"github.com/foxbit19/todo-app/server/src/model"
 	"github.com/foxbit19/todo-app/server/src/store"
 	testingCommon "github.com/foxbit19/todo-app/server/src/testing"
+	"gotest.tools/v3/assert"
 )
 
 func TestStoreItemsAndRetrieveThem(t *testing.T) {
@@ -15,15 +16,15 @@ func TestStoreItemsAndRetrieveThem(t *testing.T) {
 	store, _ := store.NewFileSystemStore(database)
 	server := NewTodoServer(store)
 
-	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "I have to do some things, at first"))
-	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "Next, I have other things to do"))
-	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "Lastly, this is the last thing I have to do"))
+	server.ServeHTTP(httptest.NewRecorder(), testingCommon.NewPostTodoRequest(t, "I have to do some things, at first"))
+	server.ServeHTTP(httptest.NewRecorder(), testingCommon.NewPostTodoRequest(t, "Next, I have other things to do"))
+	server.ServeHTTP(httptest.NewRecorder(), testingCommon.NewPostTodoRequest(t, "Lastly, this is the last thing I have to do"))
 
 	t.Run("Get items", func(t *testing.T) {
 		response := httptest.NewRecorder()
-		server.ServeHTTP(response, newGetAllTodosRequest())
+		server.ServeHTTP(response, testingCommon.NewGetAllTodosRequest())
 
-		assertResponseStatus(t, response.Code, 200)
+		assert.Equal(t, response.Code, 200)
 		assertAndGetAllJsonResponse(t, response.Body, &[]model.Item{
 			{
 				Id: 1,
