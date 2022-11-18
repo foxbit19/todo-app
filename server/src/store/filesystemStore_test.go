@@ -92,6 +92,10 @@ func TestFileSystemStore(t *testing.T) {
 
 		store.StoreItem("first todo")
 		got := store.GetItem(1)
-		assert.DeepEqual(t, got.Description, "first todo")
+		assert.DeepEqual(t, *got, model.Item{
+			Id: 1,
+			Description: "first todo",
+			Order: 1,
+		})
 	})
 }
