@@ -84,15 +84,14 @@ func TestFileSystemStore(t *testing.T) {
 		})
 	})
 
-	/* t.Run("store a new todo items", func(t *testing.T) {
-		database, buffer := []model.Item{}, new(bytes.Buffer)
+	t.Run("store a new todo items", func(t *testing.T) {
+		database, cleanDb := createTempFile(t, `[]`)
+		defer cleanDb()
 
-		json.NewEncoder(buffer).Encode(database)
-
-		store := FileSystemStore{buffer}
+		store := FileSystemStore{database}
 
 		store.StoreItem("first todo")
 		got := store.GetItem(1)
-		assert.DeepEqual(t, *got, database[0])
-	}) */
+		assert.DeepEqual(t, got.Description, "first todo")
+	})
 }
