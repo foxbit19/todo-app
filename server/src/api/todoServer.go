@@ -2,10 +2,13 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/foxbit19/todo-app/server/src/api/common"
+	"github.com/foxbit19/todo-app/server/src/model"
 	"github.com/foxbit19/todo-app/server/src/store"
 )
 
@@ -33,6 +36,8 @@ func (s *TodoServer) todoHandler(w http.ResponseWriter, r *http.Request) {
 			s.storeItem(w,r)
 		case http.MethodGet:
 			s.showItem(w,r)
+		case http.MethodPut:
+			s.updateItem(w, r)
 	}
 }
 
@@ -66,4 +71,32 @@ func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("content-type", "application/json")
 	json.NewEncoder(w).Encode(s.store.GetItem(id))
+}
+
+func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
+	id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/items/"))
+
+	if r.ContentLength == 0 {
+		common.ErrorResponse(w, http.StatusBadRequest, "No payload provided")
+		return
+	}
+
+	var jsonBody map[string]string
+	err := json.NewDecoder(r.Body).Decode(&jsonBody)
+
+	if err != nil {
+		common.ErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("Error on decoding update payload: %v", err))
+		return
+	}
+
+	err = s.store.UpdateItem(id, &model.Item{
+		Description: jsonBody["description"],
+	})
+
+	if err != nil {
+		common.ErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("Error on update: %v", err))
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
 }

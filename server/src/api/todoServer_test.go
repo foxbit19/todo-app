@@ -55,7 +55,7 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 
 func TestGETTodoItem(t *testing.T) {
 	store := testingCommon.StubItemStore{
-		[]model.Item{
+		&[]model.Item{
 			{
 				Id:          1,
 				Description: "this is my first todo",
@@ -72,7 +72,6 @@ func TestGETTodoItem(t *testing.T) {
 
 	t.Run("returns the first todo item", func(t *testing.T) {
 		request := testingCommon.NewGetTodoRequest(1)
-		// this is the spy
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -112,13 +111,13 @@ func TestGETTodoItem(t *testing.T) {
 
 		assert.Equal(t, response.Code, http.StatusOK)
 		assertContentType(t, response, "application/json")
-		assertAndGetAllJsonResponse(t, response.Body, &store.Todo)
+		assertAndGetAllJsonResponse(t, response.Body, store.Todo)
 	})
 }
 
 func TestStoreTodoItems(t *testing.T) {
 	store := testingCommon.StubItemStore{
-		[]model.Item{},
+		&[]model.Item{},
 	}
 	server := NewTodoServer(&store)
 
@@ -150,5 +149,77 @@ func TestStoreTodoItems(t *testing.T) {
 		if got.Description != want {
 			t.Errorf("got %q, want %q", got, want)
 		}
+	})
+}
+
+func TestUpdateTodoItem(t *testing.T)  {
+	store := testingCommon.StubItemStore{
+		&[]model.Item{
+			{
+				Id:          2,
+				Description: "this is my second todo",
+				Order:       2,
+			},
+		},
+	}
+	server := NewTodoServer(&store)
+
+	t.Run("it updates an existing item", func (t *testing.T)  {
+
+		description := "I've made a mistake, this is my third todo"
+		body, buffer := map[string]string{"description": description}, new(bytes.Buffer)
+		err := json.NewEncoder(buffer).Encode(body)
+		if err != nil {
+			t.Errorf("Unable to encode JSON %q: %v", body, err)
+		}
+
+		request, _ := http.NewRequest(http.MethodPut, "/items/2", buffer)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusAccepted)
+		// verify if the item was correctly stored
+		got := server.store.GetItem(2)
+		assert.Equal(t, got.Description, description)
+	})
+
+	t.Run("it responds with bad request when trying to update a not-existing item", func (t *testing.T)  {
+		body, buffer := map[string]string{"description": "123123"}, new(bytes.Buffer)
+		err := json.NewEncoder(buffer).Encode(body)
+		if err != nil {
+			t.Errorf("Unable to encode JSON %q: %v", body, err)
+		}
+
+		request, _ := http.NewRequest(http.MethodPut, "/items/76", buffer)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusBadRequest)
+	})
+
+	t.Run("it responds with bad request when trying to update without id", func (t *testing.T)  {
+		body, buffer := map[string]string{"description": "123123"}, new(bytes.Buffer)
+		err := json.NewEncoder(buffer).Encode(body)
+		if err != nil {
+			t.Errorf("Unable to encode JSON %q: %v", body, err)
+		}
+
+		request, _ := http.NewRequest(http.MethodPut, "/items/", buffer)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusBadRequest)
+	})
+
+	t.Run("it responds with bad request when trying to update without a body", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodPut, "/items/2", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusBadRequest)
 	})
 }

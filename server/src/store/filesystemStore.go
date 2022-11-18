@@ -72,6 +72,13 @@ func (s *FileSystemStore) StoreItem(description string) {
 	encodeDatabase(&s.items, s.Database)
 }
 
+// UpdateItem updates an item using the model provided.
+// The provided item couldn't be exists.
+// It is used as standard way to pass argument to this function.
+func (s *FileSystemStore) UpdateItem(id int, item *model.Item) error {
+	panic("not implemented")
+}
+
 // findItem is a private function to find an item
 // inside an array of items.
 // The id of the item to find is used to compare items
