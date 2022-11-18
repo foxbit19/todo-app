@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -47,7 +46,6 @@ func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 	var jsonBody map[string]string
 	json.NewDecoder(r.Body).Decode(&jsonBody)
 	s.store.StoreItem(jsonBody["description"])
-	fmt.Printf("json body %v", s.store.GetItem(1))
 }
 
 func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
