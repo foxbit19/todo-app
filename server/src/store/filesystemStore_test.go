@@ -163,4 +163,36 @@ func TestFileSystemStore(t *testing.T) {
 
 		assert.Error(t, err, "Cannot update item 3 without a description")
 	})
+
+	t.Run("it deletes an existing item", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		store.DeleteItem(3)
+		got := store.GetItem(3)
+
+		if got != nil {
+			t.Errorf("got %v is not nil", got)
+		}
+	})
+
+	t.Run("it deletes an existing item", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		store.DeleteItem(3)
+		got := store.GetItem(3)
+
+		if got != nil {
+			t.Errorf("got %v is not nil", got)
+		}
+	})
 }

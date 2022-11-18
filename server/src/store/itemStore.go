@@ -7,4 +7,5 @@ type ItemStore interface {
 	GetItems() *[]model.Item
 	StoreItem(description string)
 	UpdateItem(id int, item *model.Item) error
+	DeleteItem(id int)
 }

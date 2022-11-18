@@ -28,6 +28,7 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 	router.HandleFunc("/items/{id}", s.showItem).Methods("GET")
 	router.HandleFunc("/items/", s.storeItem).Methods("POST")
 	router.HandleFunc("/items/{id}", s.updateItem).Methods("PUT")
+	router.HandleFunc("/items/{id}", s.deleteItem).Methods("DELETE")
 	s.Handler = router
 
 	return s
@@ -107,4 +108,17 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	w.WriteHeader(http.StatusAccepted)
+}
+
+// deleteItem deletes an item from store using only id of the item
+func (s *TodoServer) deleteItem(w http.ResponseWriter, r *http.Request)  {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 16)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	s.store.DeleteItem(int(id))
+	w.WriteHeader(http.StatusOK)
 }

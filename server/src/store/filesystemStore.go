@@ -94,6 +94,22 @@ func (s *FileSystemStore) UpdateItem(id int, item *model.Item) error {
 	return nil
 }
 
+// DeleteItem deletes an item from this store.
+// It uses only item id to looking for the item
+// and to delete it.
+func (s *FileSystemStore) DeleteItem(id int) {
+	index := s.findItemIndex(id)
+
+	// if an element does not exist, nothing occurs
+	if index == -1 {
+		return
+	}
+
+	s.items = append(s.items[:index],s.items[index+1:]...)
+
+	encodeDatabase(&s.items, s.Database)
+}
+
 // findItem is a private function to find an item
 // inside an array of items.
 // The id of the item to find is used to compare items
@@ -108,6 +124,22 @@ func (s *FileSystemStore) findItem(id int) *model.Item {
 	}
 
 	return nil
+}
+
+// findItemIndex is a private function to find an index of an item
+// inside an array of items.
+// The id of the item to find is used to compare items
+// between them.
+// It returns the index of the item found, if any, otherwise
+// it returns nil.
+func (s *FileSystemStore) findItemIndex(id int) int {
+	for i := 0; i < len(s.items); i++ {
+		if s.items[i].Id == id {
+			return i
+		}
+	}
+
+	return -1
 }
 
 // decodeDatabase is a private function to decode the database of

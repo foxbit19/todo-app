@@ -204,7 +204,7 @@ func TestUpdateTodoItem(t *testing.T)  {
 		server.ServeHTTP(response, request)
 
 		assert.Equal(t, response.Code, http.StatusAccepted)
-		// verify if the item was correctly stored
+		// verify if the item was correctly updated
 		got := server.store.GetItem(2)
 		assert.Equal(t, got.Description, description)
 	})
@@ -226,6 +226,51 @@ func TestUpdateTodoItem(t *testing.T)  {
 
 	t.Run("it responds with bad request when trying to update without a body", func (t *testing.T)  {
 		request, _ := http.NewRequest(http.MethodPut, "/items/2", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusBadRequest)
+	})
+}
+
+func TestDeleteTodoItem(t *testing.T)  {
+	store := testingCommon.StubItemStore{
+		&[]model.Item{
+			{
+				Id:          1,
+				Description: "this is my first todo",
+				Order:       2,
+			},
+		},
+	}
+	server := NewTodoServer(&store)
+
+	t.Run("it deletes an existing item", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodDelete, "/items/1", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusOK)
+		got := server.store.GetItem(1)
+
+		if got != nil {
+			t.Errorf("got %v is not nil", got)
+		}
+	})
+
+	t.Run("it responds 200 even if the item to delete does not exists", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodDelete, "/items/55", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusOK)
+	})
+
+	t.Run("it sends 400 if id is not int", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodDelete, "/items/abc", nil)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)

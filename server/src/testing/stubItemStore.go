@@ -39,6 +39,15 @@ func (s *StubItemStore) UpdateItem(id int, item *model.Item) error {
 	return nil
 }
 
+func (s *StubItemStore) DeleteItem(id int) {
+	index := s.findItemIndex(id)
+	if index == -1 {
+		return
+	}
+	todo := append((*s.Todo)[:index],(*s.Todo)[index+1:]...)
+	s.Todo = &todo
+}
+
 func (s *StubItemStore) findItem(id int) *model.Item {
 	for i := 0; i < len(*s.Todo); i++ {
 		if((*s.Todo)[i].Id == id) {
@@ -47,4 +56,14 @@ func (s *StubItemStore) findItem(id int) *model.Item {
 	}
 
 	return nil
+}
+
+func (s *StubItemStore) findItemIndex(id int) int {
+	for i := 0; i < len(*s.Todo); i++ {
+		if((*s.Todo)[i].Id == id) {
+			return i
+		}
+	}
+
+	return -1
 }
