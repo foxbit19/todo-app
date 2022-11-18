@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/foxbit19/todo-app/server/src/api/common"
 	"github.com/foxbit19/todo-app/server/src/model"
 	"github.com/foxbit19/todo-app/server/src/store"
+	"github.com/gorilla/mux"
 )
 
 type TodoServer struct {
@@ -22,34 +22,46 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 		store: store,
 	}
 
-	router := http.NewServeMux()
-	router.Handle("/", http.HandlerFunc(s.welcomeHandler))
-	router.Handle("/items/", http.HandlerFunc(s.todoHandler))
-
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/", s.welcomeHandler).Methods("GET")
+	router.HandleFunc("/items/", s.showItems).Methods("GET")
+	router.HandleFunc("/items/{id}", s.showItem).Methods("GET")
+	router.HandleFunc("/items/", s.storeItem).Methods("POST")
+	router.HandleFunc("/items/{id}", s.updateItem).Methods("PUT")
 	s.Handler = router
 
 	return s
 }
 
+// welcomeHander shows a simple welcome message
 func (s *TodoServer) welcomeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		w.Write([]byte("Welcome to ToDo server!"))
-	} else {
+		w.Write([]byte("Great scott! Welcome to ToDo server!"))
+}
+
+// showItems returns all the todo items stored into the store
+func (s *TodoServer) showItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(s.store.GetItems())
+}
+
+// showItem returns the item that match id argument
+func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 16)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	if id == 0 {
 		w.WriteHeader(http.StatusNotFound)
 	}
+
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(s.store.GetItem(int(id)))
 }
 
-func (s *TodoServer) todoHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-		case http.MethodPost:
-			s.storeItem(w,r)
-		case http.MethodGet:
-			s.showItem(w,r)
-		case http.MethodPut:
-			s.updateItem(w, r)
-	}
-}
-
+// storeItem stores the item into store
 func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 
@@ -62,28 +74,15 @@ func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 	s.store.StoreItem(jsonBody["description"])
 }
 
-func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
-	arg := strings.TrimPrefix(r.URL.Path, "/items/")
-
-	if arg == "" {
-		w.Header().Set("content-type", "application/json")
-		// returns all the items
-		json.NewEncoder(w).Encode(s.store.GetItems())
-		return
-	}
-
-	id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/items/"))
-
-	if id == 0 {
-		w.WriteHeader(http.StatusNotFound)
-	}
-
-	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(s.store.GetItem(id))
-}
-
+// updateItem updates an item using the given id to find it
+// and the PUT body to update fields
 func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
-	id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/items/"))
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 16)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 
 	if r.ContentLength == 0 {
 		common.ErrorResponse(w, http.StatusBadRequest, "No payload provided")
@@ -91,14 +90,14 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	var jsonBody map[string]string
-	err := json.NewDecoder(r.Body).Decode(&jsonBody)
+	err = json.NewDecoder(r.Body).Decode(&jsonBody)
 
 	if err != nil {
 		common.ErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("Error on decoding update payload: %v", err))
 		return
 	}
 
-	err = s.store.UpdateItem(id, &model.Item{
+	err = s.store.UpdateItem(int(id), &model.Item{
 		Description: jsonBody["description"],
 	})
 

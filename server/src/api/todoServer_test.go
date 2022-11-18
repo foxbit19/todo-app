@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -64,7 +65,7 @@ func TestBasicServer(t *testing.T)  {
 		server.ServeHTTP(response, request)
 
 		assert.Equal(t, response.Code, http.StatusOK)
-		assertResponseBody(t, response.Body.String(), "Welcome to ToDo server!")
+		assertResponseBody(t, response.Body.String(), "Great scott! Welcome to ToDo server!")
 	})
 }
 
@@ -116,6 +117,15 @@ func TestGETTodoItem(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assert.Equal(t, response.Code, http.StatusNotFound)
+	})
+
+	t.Run("returns 400 on string todo id", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/items/%s", "crazy"), nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusBadRequest)
 	})
 
 	t.Run("Returns all todo items as JSON array", func(t *testing.T) {
@@ -207,21 +217,6 @@ func TestUpdateTodoItem(t *testing.T)  {
 		}
 
 		request, _ := http.NewRequest(http.MethodPut, "/items/76", buffer)
-		response := httptest.NewRecorder()
-
-		server.ServeHTTP(response, request)
-
-		assert.Equal(t, response.Code, http.StatusBadRequest)
-	})
-
-	t.Run("it responds with bad request when trying to update without id", func (t *testing.T)  {
-		body, buffer := map[string]string{"description": "123123"}, new(bytes.Buffer)
-		err := json.NewEncoder(buffer).Encode(body)
-		if err != nil {
-			t.Errorf("Unable to encode JSON %q: %v", body, err)
-		}
-
-		request, _ := http.NewRequest(http.MethodPut, "/items/", buffer)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
