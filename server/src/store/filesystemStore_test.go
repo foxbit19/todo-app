@@ -17,7 +17,7 @@ func TestFileSystemStore(t *testing.T) {
 		]`)
 		defer cleanDb()
 
-		store := NewFileSystemStore(database)
+		store, _ := NewFileSystemStore(database)
 
 		got := store.GetItems()
 		want := []model.Item{
@@ -49,7 +49,7 @@ func TestFileSystemStore(t *testing.T) {
 		]`)
 		defer cleanDb()
 
-		store := NewFileSystemStore(database)
+		store, _ := NewFileSystemStore(database)
 
 		got := store.GetItem(2)
 
@@ -64,7 +64,7 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDb := testingCommon.CreateTempFile(t, `[]`)
 		defer cleanDb()
 
-		store := NewFileSystemStore(database)
+		store, _ := NewFileSystemStore(database)
 
 		store.StoreItem("first todo")
 		got := store.GetItem(1)
@@ -73,5 +73,14 @@ func TestFileSystemStore(t *testing.T) {
 			Description: "first todo",
 			Order: 1,
 		})
+	})
+
+	t.Run("Gives error when database file is empty", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, "")
+		defer cleanDb()
+
+		_, err := NewFileSystemStore(database)
+
+		assert.NilError(t, err)
 	})
 }

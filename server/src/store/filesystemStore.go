@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/foxbit19/todo-app/server/src/model"
@@ -14,15 +13,20 @@ import (
 // A FileSystemStore stores todo item into a JSON file.
 type FileSystemStore struct {
 	Database *json.Encoder
-	items []model.Item
+	items    []model.Item
 }
 
-func NewFileSystemStore(database *os.File) *FileSystemStore {
-	database.Seek(0, 0)
+func NewFileSystemStore(database *os.File) (*FileSystemStore, error) {
+	err := initDatabase(database)
+
+	if err != nil {
+		return nil, err
+	}
+
 	items, err := decodeDatabase(database)
 
 	if err != nil {
-		log.Fatalf("Unable to decode database file %s: %v", database.Name(), err)
+		return nil, err
 	}
 
 	return &FileSystemStore{
@@ -30,7 +34,7 @@ func NewFileSystemStore(database *os.File) *FileSystemStore {
 			File: database,
 		}),
 		items: items,
-	}
+	}, nil
 }
 
 // GetItem gets an item of the database using its id.
@@ -50,13 +54,13 @@ func (s *FileSystemStore) GetItems() *[]model.Item {
 // StoreItem implements the storing mechanism of an item
 // using a description as argument.
 // Other item's fields are set as follow:
-// 	- Id is equals to the number of items + 1
-// 	- Order, as Id field, is equals to the number of items + 1 by default
+//   - Id is equals to the number of items + 1
+//   - Order, as Id field, is equals to the number of items + 1 by default
 func (s *FileSystemStore) StoreItem(description string) {
 	s.items = append(s.items, model.Item{
-		Id: len(s.items)+1,
+		Id:          len(s.items) + 1,
 		Description: description,
-		Order: len(s.items)+1,
+		Order:       len(s.items) + 1,
 	})
 
 	encodeDatabase(&s.items, s.Database)
@@ -70,7 +74,7 @@ func (s *FileSystemStore) StoreItem(description string) {
 // it returns nil.
 func (s *FileSystemStore) findItem(items *[]model.Item, id int) *model.Item {
 	for _, item := range *items {
-		if(item.Id == id) {
+		if item.Id == id {
 			return &item
 		}
 	}
@@ -101,4 +105,24 @@ func decodeDatabase(database io.Reader) ([]model.Item, error) {
 // to a Writer.
 func encodeDatabase(items *[]model.Item, database *json.Encoder) {
 	database.Encode(items)
+}
+
+// initDatabase initializes the database if necessary
+func initDatabase(database *os.File) (error) {
+	database.Seek(0, 0)
+	info, err := database.Stat()
+
+	if err != nil {
+		return err
+	}
+
+	// if the size of the file is equal to 0
+	// this piece of code write an empty json array
+	// into the file to initialize database
+	if info.Size() == 0 {
+		database.Write([]byte("[]"))
+		database.Seek(0, 0)
+	}
+
+	return nil
 }

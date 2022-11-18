@@ -12,7 +12,8 @@ import (
 func TestStoreItemsAndRetrieveThem(t *testing.T) {
 	database, cleanDb := testingCommon.CreateTempFile(t, "[]")
 	defer cleanDb()
-	server := NewTodoServer(store.NewFileSystemStore(database))
+	store, _ := store.NewFileSystemStore(database)
+	server := NewTodoServer(store)
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "I have to do some things, at first"))
 	server.ServeHTTP(httptest.NewRecorder(), newPostTodoRequest(t, "Next, I have other things to do"))

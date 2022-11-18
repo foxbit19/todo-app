@@ -20,7 +20,13 @@ func main()  {
 		log.Fatalf("Error on create or open database %s: %v", dbFileName, err)
 	}
 
-	server := api.NewTodoServer(store.NewFileSystemStore(database))
+	store, err := store.NewFileSystemStore(database)
+
+	if err != nil {
+		log.Fatalf("Unable to open database file %s: %v", dbFileName, err)
+	}
+
+	server := api.NewTodoServer(store)
 
 	log.Printf("Starting ToDo server on port %d",port)
 
