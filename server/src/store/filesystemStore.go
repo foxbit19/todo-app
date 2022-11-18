@@ -43,7 +43,7 @@ func NewFileSystemStore(database *os.File) (*FileSystemStore, error) {
 // It returns a reference of the item found, if any, otherwise
 // it returns nil.
 func (s *FileSystemStore) GetItem(id int) *model.Item {
-	return s.findItem(&s.items, id)
+	return s.findItem(id)
 }
 
 // GetItems gets all the items into database.
@@ -74,9 +74,24 @@ func (s *FileSystemStore) StoreItem(description string) {
 
 // UpdateItem updates an item using the model provided.
 // The provided item couldn't be exists.
-// It is used as standard way to pass argument to this function.
+// The model is used as standard way to pass argument to this function.
+// It returns an error if the item cannot be updated
 func (s *FileSystemStore) UpdateItem(id int, item *model.Item) error {
-	panic("not implemented")
+	found := s.findItem(id)
+
+	if found == nil {
+		return fmt.Errorf("Item %d not found", id)
+	}
+
+	if len(item.Description) == 0 {
+		return fmt.Errorf("Cannot update item %d without a description", id)
+	}
+
+	found.Description = item.Description
+
+	encodeDatabase(&s.items, s.Database)
+
+	return nil
 }
 
 // findItem is a private function to find an item
@@ -85,10 +100,10 @@ func (s *FileSystemStore) UpdateItem(id int, item *model.Item) error {
 // between them.
 // It returns a reference of the item found, if any, otherwise
 // it returns nil.
-func (s *FileSystemStore) findItem(items *[]model.Item, id int) *model.Item {
-	for _, item := range *items {
-		if item.Id == id {
-			return &item
+func (s *FileSystemStore) findItem(id int) *model.Item {
+	for i := 0; i < len(s.items); i++ {
+		if s.items[i].Id == id {
+			return &s.items[i]
 		}
 	}
 

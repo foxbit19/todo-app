@@ -115,4 +115,52 @@ func TestFileSystemStore(t *testing.T) {
 
 		assert.DeepEqual(t, *got, want)
 	})
+
+	t.Run("updated an existing todo item", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		want := "new description here"
+		store.UpdateItem(3, &model.Item{
+			Description: want,
+		})
+		got := store.GetItem(3)
+
+		assert.DeepEqual(t, got.Description, want)
+	})
+
+	t.Run("it gives an error when trying to updated an non-existing todo item", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		want := "new description here"
+		err := store.UpdateItem(5, &model.Item{
+			Description: want,
+		})
+
+		assert.Error(t, err, "Item 5 not found")
+	})
+
+	t.Run("it gives an error when trying to updated an item without description", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		err := store.UpdateItem(3, &model.Item{
+			Description: "",
+		})
+
+		assert.Error(t, err, "Cannot update item 3 without a description")
+	})
 }
