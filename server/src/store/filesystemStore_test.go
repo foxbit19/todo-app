@@ -17,7 +17,7 @@ func TestFileSystemStore(t *testing.T) {
 		]`)
 		defer cleanDb()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		got := store.GetItems()
 		want := []model.Item{
@@ -49,7 +49,7 @@ func TestFileSystemStore(t *testing.T) {
 		]`)
 		defer cleanDb()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		got := store.GetItem(2)
 
@@ -64,7 +64,7 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDb := testingCommon.CreateTempFile(t, `[]`)
 		defer cleanDb()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		store.StoreItem("first todo")
 		got := store.GetItem(1)

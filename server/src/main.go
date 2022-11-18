@@ -14,13 +14,13 @@ const dbFileName = "todo.db.json"
 const port = 8000
 
 func main()  {
-	file, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	database, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
 		log.Fatalf("Error on create or open database %s: %v", dbFileName, err)
 	}
 
-	server := api.NewTodoServer(&store.FileSystemStore{file})
+	server := api.NewTodoServer(store.NewFileSystemStore(database))
 
 	log.Printf("Starting ToDo server on port %d",port)
 
