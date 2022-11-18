@@ -11,9 +11,9 @@ import (
 func TestFileSystemStore(t *testing.T) {
 	t.Run("returns all todo items", func(t *testing.T) {
 		database, cleanDb := testingCommon.CreateTempFile(t, `[
-			{"Id": 1, "Description": "first todo", "Order": 2},
-			{"Id": 2, "Description": "second todo", "Order": 3},
-			{"Id": 3, "Description": "third todo", "Order": 1}
+			{"Id": 1, "Description": "first todo", "Order": 1},
+			{"Id": 2, "Description": "second todo", "Order": 2},
+			{"Id": 3, "Description": "third todo", "Order": 3}
 		]`)
 		defer cleanDb()
 
@@ -24,17 +24,17 @@ func TestFileSystemStore(t *testing.T) {
 			{
 				Id: 1,
 				Description: "first todo",
-				Order: 2,
+				Order: 1,
 			},
 			{
 				Id: 2,
 				Description: "second todo",
-				Order: 3,
+				Order: 2,
 			},
 			{
 				Id: 3,
 				Description: "third todo",
-				Order: 1,
+				Order: 3,
 			},
 		}
 
@@ -75,12 +75,44 @@ func TestFileSystemStore(t *testing.T) {
 		})
 	})
 
-	t.Run("Gives error when database file is empty", func(t *testing.T) {
+	t.Run("Gives an error when database file is empty", func(t *testing.T) {
 		database, cleanDb := testingCommon.CreateTempFile(t, "")
 		defer cleanDb()
 
 		_, err := NewFileSystemStore(database)
 
 		assert.NilError(t, err)
+	})
+
+	t.Run("returns the todo list in order", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 1, "Description": "first todo", "Order": 2},
+			{"Id": 2, "Description": "second todo", "Order": 3},
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		got := store.GetItems()
+		want := []model.Item{
+			{
+				Id: 3,
+				Description: "third todo",
+				Order: 1,
+			},
+			{
+				Id: 1,
+				Description: "first todo",
+				Order: 2,
+			},
+			{
+				Id: 2,
+				Description: "second todo",
+				Order: 3,
+			},
+		}
+
+		assert.DeepEqual(t, *got, want)
 	})
 }

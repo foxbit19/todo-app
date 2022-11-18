@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 
 	"github.com/foxbit19/todo-app/server/src/model"
 	"github.com/foxbit19/todo-app/server/src/store/utils"
@@ -48,7 +49,12 @@ func (s *FileSystemStore) GetItem(id int) *model.Item {
 // GetItems gets all the items into database.
 // It returns a pointer to the slice of the items.
 func (s *FileSystemStore) GetItems() *[]model.Item {
-	return &s.items
+	items := s.items
+	sort.Slice(items, func (i int, j int) bool  {
+		return items[i].Order < items[j].Order
+	})
+
+	return &items
 }
 
 // StoreItem implements the storing mechanism of an item
