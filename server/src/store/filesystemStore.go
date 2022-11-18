@@ -2,37 +2,59 @@ package store
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/foxbit19/todo-app/server/src/model"
 )
 
 type FileSystemStore struct {
-	database io.Reader
+	database io.ReadWriteSeeker
 }
 
 func (s *FileSystemStore) GetItem(id int) *model.Item {
-	/* for i := 0; i < len(s.todo); i++ {
-		if(s.todo[i].Id == id) {
-			return &s.todo[i]
+	items, _ := s.decodeDatabase()
+
+	for _, item := range *items {
+		if(item.Id == id) {
+			return &item
 		}
 	}
 
-	return nil */
 	return nil
 }
 
 func (s *FileSystemStore) GetItems() *[]model.Item {
-	var items []model.Item
-	json.NewDecoder(s.database).Decode(&items)
+	items, _ := s.decodeDatabase()
 
-	return &items
+	return items
 }
 
 func (s *FileSystemStore) StoreItem(description string) {
-	/* s.todo = append(s.todo, model.Item{
-		Id: len(s.todo)+1,
+	/* items, _ := s.decodeDatabase()
+
+	items = append(items, model.Item{
+		Id: len(items)+1,
 		Description: description,
-		Order: len(s.todo)+1,
+		Order: len(items)+1,
 	}) */
 }
+
+func (s *FileSystemStore) decodeDatabase() (*[]model.Item, error) {
+	s.database.Seek(0, 0)
+	var items []model.Item
+
+	err := json.NewDecoder(s.database).Decode(&items)
+
+	if err != nil {
+		err = fmt.Errorf("Unable to parse JSON response %v", err)
+	}
+
+	return &items, err
+}
+
+/* func (s *FileSystemStore) encodeDatabase(*[]model.Item) {
+	json.NewEncoder(s.database).Encode(items)
+
+	return &items
+} */
