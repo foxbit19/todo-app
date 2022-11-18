@@ -23,11 +23,20 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 	}
 
 	router := http.NewServeMux()
+	router.Handle("/", http.HandlerFunc(s.welcomeHandler))
 	router.Handle("/items/", http.HandlerFunc(s.todoHandler))
 
 	s.Handler = router
 
 	return s
+}
+
+func (s *TodoServer) welcomeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		w.Write([]byte("Welcome to ToDo server!"))
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+	}
 }
 
 func (s *TodoServer) todoHandler(w http.ResponseWriter, r *http.Request) {

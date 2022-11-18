@@ -53,6 +53,21 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 	}
 }
 
+func TestBasicServer(t *testing.T)  {
+	store := testingCommon.StubItemStore{}
+	server := NewTodoServer(&store)
+
+	t.Run("it shows a welcome message on / using GET", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodGet, "/", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusOK)
+		assertResponseBody(t, response.Body.String(), "Welcome to ToDo server!")
+	})
+}
+
 func TestGETTodoItem(t *testing.T) {
 	store := testingCommon.StubItemStore{
 		&[]model.Item{
