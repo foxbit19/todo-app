@@ -9,11 +9,7 @@ describe('update todo', () => {
     let item: Item
 
     beforeEach(() => {
-        item = {
-            id: 1,
-            description: 'this is my item',
-            order: 2
-        }
+        item = new Item(1, 'this is my item', 2)
     })
 
     const getInputElement = (): HTMLInputElement => {

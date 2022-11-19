@@ -22,21 +22,9 @@ describe('todo list', () => {
 
     test('it shows the provided list of elements using description field', () => {
         const items: Item[] = [
-            {
-                id: 1,
-                description: 'this is my first todo',
-                order: 1
-            },
-            {
-                id: 2,
-                description: 'this is my second todo',
-                order: 2
-            },
-            {
-                id: 3,
-                description: 'this is my third todo',
-                order: 3
-            },
+            new Item(1, 'this is my first todo', 1),
+            new Item(2, 'this is my second todo', 2),
+            new Item(3, 'this is my third todo', 3)
         ]
 
         render(<TodoList items={items} />)
@@ -48,16 +36,8 @@ describe('todo list', () => {
 
     test('it truncates an item description if this text is longer than 50 characters', () => {
         const items: Item[] = [
-            {
-                id: 1,
-                description: 'this is my first todo',
-                order: 1
-            },
-            {
-                id: 2,
-                description: 'this is one of the longest todo that I\'ve wrote since then. This todo description is sooo long',
-                order: 2
-            },
+            new Item(1, 'this is my first todo', 1),
+            new Item(2, 'this is one of the longest todo that I\'ve wrote since then. This todo description is sooo long', 2),
         ]
 
         render(<TodoList items={items} />)
@@ -70,16 +50,8 @@ describe('todo list', () => {
 
     test('it launch an event when an item is clicked', () => {
         const items: Item[] = [
-            {
-                id: 1,
-                description: 'this is my first todo',
-                order: 1
-            },
-            {
-                id: 2,
-                description: 'this is my second todo',
-                order: 2
-            },
+            new Item(1, 'this is my first todo', 1),
+            new Item(2, 'this is my second todo', 2),
         ]
 
         const handleItemClick = sinon.spy()
@@ -91,16 +63,8 @@ describe('todo list', () => {
 
     test('it pass the item click on Item click', () => {
         const items: Item[] = [
-            {
-                id: 1,
-                description: 'this is my first todo',
-                order: 1
-            },
-            {
-                id: 2,
-                description: 'this is my second todo',
-                order: 2
-            },
+            new Item(1, 'this is my first todo', 1),
+            new Item(2, 'this is my second todo', 2),
         ]
 
         const handleItemClick = sinon.spy()

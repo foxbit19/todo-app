@@ -22,16 +22,8 @@ interface MockResponse<T> {
 }
 
 describe('Item service', () => {
-    const itemMock1: Item = {
-        id: 1,
-        description: 'This is my beautiful todo',
-        order: 1
-    }
-    const itemMock2: Item = {
-        id: 2,
-        description: 'This is my incredible todo',
-        order: 3
-    }
+    const itemMock1: Item = new Item(1, 'This is my beautiful todo', 1)
+    const itemMock2: Item = new Item(2, 'This is my incredible todo', 3)
 
     const findQueryString = (url: RequestInfo | URL): string => {
         const split = url.toString().split('/')

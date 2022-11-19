@@ -15,11 +15,7 @@ const UpdateTodo = (props: Props) => {
 
     const handleUpdateClick = () => {
         if (props.onUpdateClick) {
-            props.onUpdateClick({
-                id: props.item.id,
-                description: inputValue,
-                order: props.item.order
-            })
+            props.onUpdateClick(new Item(props.item.id, inputValue, props.item.order))
         }
     }
 
