@@ -66,7 +66,7 @@ func TestFileSystemStore(t *testing.T) {
 
 		store, _ := NewFileSystemStore(database)
 
-		store.StoreItem("first todo")
+		store.StoreItem("first todo", 1)
 		got := store.GetItem(1)
 		assert.DeepEqual(t, *got, model.Item{
 			Id: 1,

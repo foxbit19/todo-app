@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/foxbit19/todo-app/server/src/api/common"
+	"github.com/foxbit19/todo-app/server/src/core"
 	"github.com/foxbit19/todo-app/server/src/model"
 	"github.com/foxbit19/todo-app/server/src/store"
 	"github.com/gorilla/mux"
@@ -59,7 +60,7 @@ func (s *TodoServer) showItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(s.store.GetItem(int(id)))
+	json.NewEncoder(w).Encode(core.NewItem(s.store).Get(int(id)))
 }
 
 // storeItem stores the item into store
@@ -72,7 +73,8 @@ func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 
 	var jsonBody map[string]string
 	json.NewDecoder(r.Body).Decode(&jsonBody)
-	s.store.StoreItem(jsonBody["description"])
+
+	core.NewItem(s.store).Create(jsonBody["description"])
 }
 
 // updateItem updates an item using the given id to find it
@@ -98,8 +100,12 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	err = s.store.UpdateItem(int(id), &model.Item{
+	order, err := strconv.ParseInt(jsonBody["order"], 10, 16)
+
+	err = core.NewItem(s.store).Update(&model.Item{
+		Id: int(id),
 		Description: jsonBody["description"],
+		Order: int(order),
 	})
 
 	if err != nil {
@@ -119,6 +125,6 @@ func (s *TodoServer) deleteItem(w http.ResponseWriter, r *http.Request)  {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	s.store.DeleteItem(int(id))
+	core.NewItem(s.store).Delete(int(id))
 	w.WriteHeader(http.StatusOK)
 }

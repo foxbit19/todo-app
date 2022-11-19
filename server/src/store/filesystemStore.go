@@ -59,17 +59,18 @@ func (s *FileSystemStore) GetItems() *[]model.Item {
 
 // StoreItem implements the storing mechanism of an item
 // using a description as argument.
-// Other item's fields are set as follow:
-//   - Id is equals to the number of items + 1
-//   - Order, as Id field, is equals to the number of items + 1 by default
-func (s *FileSystemStore) StoreItem(description string) {
+// Id is equals to the number of items + 1
+func (s *FileSystemStore) StoreItem(description string, order int) int {
+	id := len(s.items) + 1
 	s.items = append(s.items, model.Item{
 		Id:          len(s.items) + 1,
 		Description: description,
-		Order:       len(s.items) + 1,
+		Order:       order,
 	})
 
 	encodeDatabase(&s.items, s.Database)
+
+	return id
 }
 
 // UpdateItem updates an item using the model provided.
