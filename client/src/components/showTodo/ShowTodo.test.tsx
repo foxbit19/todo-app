@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ShowTodo from './ShowTodo';
-import Item from '../../model/item';
+import Item from '../../models/item';
 import sinon from 'sinon';
 
 describe('show todo', () => {

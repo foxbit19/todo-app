@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Item from '../../model/item';
+import Item from '../../models/item';
 import sinon from 'sinon';
 import UpdateTodo from './UpdateTodo';
 import userEvent from '@testing-library/user-event';
