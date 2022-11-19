@@ -1,9 +1,11 @@
 import React from 'react';
-import NewTodo from './components/NewTodo';
+import TodoList from './components/list/TodoList';
+import Title from './components/title/Title';
 
 function App() {
   return <div>
-    <NewTodo />
+    <Title />
+    <TodoList items={[]} />
   </div>
 }
 

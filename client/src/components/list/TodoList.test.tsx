@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Item from '../../model/item';
 import sinon from 'sinon';
 import TodoList from './TodoList';
