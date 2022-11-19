@@ -1,6 +1,6 @@
 import React from 'react'
 
-type Props = {}
+interface Props { }
 
 const Title = (props: Props) => {
     return <div data-testid="title">
