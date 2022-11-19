@@ -4,7 +4,7 @@ import ShowTodo from './ShowTodo';
 import Item from '../../model/item';
 import sinon from 'sinon';
 
-describe('todo list', () => {
+describe('show todo', () => {
     let item: Item
 
     beforeEach(() => {

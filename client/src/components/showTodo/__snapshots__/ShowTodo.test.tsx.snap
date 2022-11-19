@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`todo list it matches snapshot 1`] = `
+exports[`show todo it matches snapshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
