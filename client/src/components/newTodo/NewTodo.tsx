@@ -1,4 +1,4 @@
-import React, { DetailedHTMLProps, InputHTMLAttributes, useState } from 'react'
+import React, { useState } from 'react'
 
 type Props = {}
 
