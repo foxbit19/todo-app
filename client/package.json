@@ -22,6 +22,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,5 +45,16 @@
   },
   "devDependencies": {
     "@types/sinon": "^10.0.13"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/!node_modules"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/src/react-app-env.d.ts",
+      "!<rootDir>/src/index.tsx"
+    ]
   }
 }
