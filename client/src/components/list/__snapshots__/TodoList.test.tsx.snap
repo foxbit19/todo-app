@@ -10,11 +10,10 @@ Object {
         data-rbd-droppable-context-id="0"
         data-rbd-droppable-id="1"
         data-testid="list"
-      >
-        <div>
-          There are no todos to show
-        </div>
-      </ul>
+      />
+      <div>
+        There are no todos to show
+      </div>
     </div>
     <div
       aria-atomic="true"
@@ -39,11 +38,10 @@ Object {
       data-rbd-droppable-context-id="0"
       data-rbd-droppable-id="1"
       data-testid="list"
-    >
-      <div>
-        There are no todos to show
-      </div>
-    </ul>
+    />
+    <div>
+      There are no todos to show
+    </div>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],
