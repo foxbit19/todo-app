@@ -57,11 +57,11 @@ describe('todo list', () => {
         const handleItemClick = sinon.spy()
 
         render(<TodoList items={items} onItemClick={handleItemClick} />)
-        getItemElement(items[0].id).click()
+        screen.getByText(items[0].description).click()
         expect(handleItemClick.called).toBeTruthy()
     })
 
-    test('it pass the item click on Item click', () => {
+    test('it pass the item clicked on Item click', () => {
         const items: Item[] = [
             new Item(1, 'this is my first todo', 1),
             new Item(2, 'this is my second todo', 2),
@@ -70,7 +70,7 @@ describe('todo list', () => {
         const handleItemClick = sinon.spy()
 
         render(<TodoList items={items} onItemClick={handleItemClick} />)
-        getItemElement(items[0].id).click()
+        screen.getByText(items[0].description).click()
         expect(handleItemClick.calledWithExactly(items[0])).toBeTruthy()
     })
 })

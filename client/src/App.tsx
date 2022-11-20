@@ -1,4 +1,4 @@
-import { Alert, AlertColor, AlertTitle, Box, createTheme, CssBaseline, Grid, Paper, styled, ThemeProvider } from '@mui/material';
+import { Alert, AlertColor, AlertTitle, Box, Button, createTheme, CssBaseline, Grid, Paper, styled, ThemeProvider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TodoList from './components/list/TodoList';
 import ShowTodo from './components/showTodo/ShowTodo';
@@ -6,6 +6,7 @@ import Title from './components/title/Title';
 import Item from './models/item';
 import ItemService from './services/itemService';
 import UpdateTodo from './components/updateTodo/UpdateTodo';
+import AddIcon from '@mui/icons-material/Add'
 
 const darkTheme = createTheme({
     palette: {
@@ -94,6 +95,7 @@ function App() {
             <Box sx={{ flexGrow: 1 }}>
                 <Title />
                 {alert}
+                <Button data-testid='new_button' variant='contained' startIcon={<AddIcon />}>Add new</Button>
                 <CustomPaper><TodoList items={items} onItemClick={handleItemClick} onComplete={handleComplete} /></CustomPaper>
             </Box>
             {item && <ShowTodo open={showTodo} item={item} onClose={handleClose} onUpdateClick={openUpdateModal} />}

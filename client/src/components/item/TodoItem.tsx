@@ -20,7 +20,7 @@ const TodoItem = (props: Props) => {
     return (
         <Draggable draggableId={props.item.id.toString()} index={props.index}>
             {(provided) => (
-                <ListItemButton data-testid={`todo_${props.item.id}`} ref={provided.innerRef}
+                <ListItemButton data-testid={`todo_${props.item.id}`} key={props.index} ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}>
                     <Checkbox icon={<CircleIcon />} checkedIcon={<CheckIcon />} onClick={props.onComplete} />

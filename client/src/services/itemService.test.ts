@@ -1,5 +1,6 @@
 import HTTPMethod from 'http-method-enum';
 import Item from '../models/item';
+import ItemAdapter from '../models/itemAdapter';
 import ItemService from './itemService';
 
 /**
@@ -30,7 +31,7 @@ describe('Item service', () => {
         return split[split.length - 1];
     }
 
-    const getMockImplementation = <T>(request: MockRequest<T>, response: MockResponse<T>) => {
+    const getMockImplementation = <T, K>(request: MockRequest<T>, response: MockResponse<K>) => {
         return (input: RequestInfo | URL, init?: RequestInit) => {
             // check if the method is correct
             if (init?.method !== request.method) {
@@ -60,14 +61,14 @@ describe('Item service', () => {
 
     describe('gets an item', () => {
         test('it gets an item from the server', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, ItemAdapter>(
                 {
                     method: HTTPMethod.GET,
                     queryString: '1'
                 },
                 {
                     status: 200,
-                    body: itemMock1
+                    body: ItemAdapter.create(itemMock1)
                 }
             ))
 
@@ -77,7 +78,7 @@ describe('Item service', () => {
         })
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, ItemAdapter>(
                 {
                     method: HTTPMethod.GET,
                     queryString: '1'
@@ -95,13 +96,13 @@ describe('Item service', () => {
 
     describe('get all items', () => {
         test('it gets all items from the server', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, ItemAdapter[]>(
                 {
                     method: HTTPMethod.GET
                 },
                 {
                     status: 200,
-                    body: [itemMock1, itemMock2]
+                    body: [ItemAdapter.create(itemMock1), ItemAdapter.create(itemMock2)]
                 }
             ))
             const service = new ItemService();
@@ -111,7 +112,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.GET
                 },
@@ -128,13 +129,13 @@ describe('Item service', () => {
 
     describe('create an item', () => {
         test('it creates a new item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
                 {
                     method: HTTPMethod.POST,
                     body: itemMock1
                 },
                 {
-                    status: 200,
+                    status: 202,
                 }
             ))
 
@@ -145,7 +146,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.POST
                 },
@@ -161,14 +162,14 @@ describe('Item service', () => {
 
     describe('update an item', () => {
         test('it updates a new item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
                 {
                     method: HTTPMethod.PUT,
                     queryString: itemMock1.id.toString(),
                     body: itemMock1,
                 },
                 {
-                    status: 200,
+                    status: 202,
                 }
             ))
 
@@ -179,7 +180,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.PUT,
                     queryString: itemMock1.id.toString()
@@ -196,7 +197,7 @@ describe('Item service', () => {
 
     describe('delete an item', () => {
         test('it delets a new item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
                 {
                     method: HTTPMethod.DELETE,
                     queryString: '1'
@@ -213,7 +214,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.DELETE,
                     queryString: '1'

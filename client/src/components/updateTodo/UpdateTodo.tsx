@@ -1,8 +1,6 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, TextField, useMediaQuery, useTheme } from '@mui/material'
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material'
 import React, { useState } from 'react'
 import Item from '../../models/item'
-import UpdateIcon from '@mui/icons-material/Update'
-import { Box } from '@mui/system'
 
 interface Props {
     open: boolean

@@ -11,4 +11,9 @@ describe('main app component', () => {
         render(<App />);
         expect(screen.getByTestId('list')).toBeInTheDocument();
     })
+
+    test('it contains the new todo button', () => {
+        render(<App />);
+        expect(screen.getByTestId('new_button')).toBeInTheDocument();
+    })
 })

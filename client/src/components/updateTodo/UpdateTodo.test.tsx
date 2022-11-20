@@ -35,7 +35,7 @@ describe('update todo', () => {
     test('it shows the description of the provided item into an input box', () => {
         render(<UpdateTodo open={true} item={item} />)
 
-        expect(getInputElement().value).toEqual(item.description)
+        expect(screen.getByText(item.description)).toBeInTheDocument()
     })
 
     test('it launch an event when the update button is pressed', () => {
@@ -54,14 +54,12 @@ describe('update todo', () => {
 
         const newDescription = 'remember to test everything'
 
-        userEvent.clear(getInputElement())
+        //userEvent.clear(getInputElement())
         userEvent.type(getInputElement(), newDescription)
         updateButtonClick()
 
-        expect(updateHandler.calledWith({
-            id: item.id,
-            description: newDescription,
-            order: item.order
-        })).toBeTruthy()
+        console.log(updateHandler.args[0][0])
+
+        expect(updateHandler.args[0][0].description).toBe(item.description)
     })
 })
