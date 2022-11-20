@@ -39,7 +39,7 @@ export default class ItemService implements Service<Item> {
     async create(item: Item): Promise<Item> {
         const response = await fetch(`${this.getBaseUrl()}/items/`, { method: HTTPMethod.POST, body: JSON.stringify(item) })
 
-        if (response.status === 200) {
+        if (response.status === 202) {
             return item
         } else {
             throw new Error('Could not create this item')
@@ -47,9 +47,9 @@ export default class ItemService implements Service<Item> {
     }
 
     async update(item: Item): Promise<Item> {
-        const response = await fetch(`${this.getBaseUrl()}/items/`, { method: HTTPMethod.PUT, body: JSON.stringify(item) })
+        const response = await fetch(`${this.getBaseUrl()}/items/${item.id}`, { method: HTTPMethod.PUT, body: JSON.stringify(item) })
 
-        if (response.status === 200) {
+        if (response.status === 202) {
             return item
         } else {
             throw new Error('Could not update this item')
