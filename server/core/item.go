@@ -3,8 +3,8 @@ package core
 import (
 	"fmt"
 
-	"github.com/foxbit19/todo-app/server/src/model"
-	"github.com/foxbit19/todo-app/server/src/store"
+	"github.com/foxbit19/todo-app/server/model"
+	"github.com/foxbit19/todo-app/server/store"
 )
 
 // Item implements the business logic of

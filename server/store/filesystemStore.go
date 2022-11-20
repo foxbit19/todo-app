@@ -7,8 +7,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/foxbit19/todo-app/server/src/model"
-	"github.com/foxbit19/todo-app/server/src/store/utils"
+	"github.com/foxbit19/todo-app/server/model"
+	"github.com/foxbit19/todo-app/server/store/utils"
 )
 
 // A FileSystemStore stores todo item into a JSON file.

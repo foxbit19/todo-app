@@ -3,7 +3,7 @@ package testing
 import (
 	"fmt"
 
-	"github.com/foxbit19/todo-app/server/src/model"
+	"github.com/foxbit19/todo-app/server/model"
 )
 
 type StubItemStore struct {

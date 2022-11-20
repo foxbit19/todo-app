@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/foxbit19/todo-app/server/src/api/common"
-	"github.com/foxbit19/todo-app/server/src/core"
-	"github.com/foxbit19/todo-app/server/src/model"
-	"github.com/foxbit19/todo-app/server/src/store"
+	"github.com/foxbit19/todo-app/server/api/common"
+	"github.com/foxbit19/todo-app/server/core"
+	"github.com/foxbit19/todo-app/server/model"
+	"github.com/foxbit19/todo-app/server/store"
 	"github.com/gorilla/mux"
 )
 
@@ -24,20 +24,41 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", s.welcomeHandler).Methods("GET")
-	router.HandleFunc("/items/", s.showItems).Methods("GET")
-	router.HandleFunc("/items/{id}", s.showItem).Methods("GET")
-	router.HandleFunc("/items/", s.storeItem).Methods("POST")
-	router.HandleFunc("/items/{id}", s.updateItem).Methods("PUT")
-	router.HandleFunc("/items/{id}", s.deleteItem).Methods("DELETE")
+	router.HandleFunc("/", s.welcomeHandler).Methods(http.MethodGet)
+	router.HandleFunc("/items/", s.showItems).Methods(http.MethodGet)
+	router.HandleFunc("/items/{id}", s.showItem).Methods(http.MethodGet)
+	router.HandleFunc("/items/", s.storeItem).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/items/{id}", s.updateItem).Methods(http.MethodPut, http.MethodOptions)
+	router.HandleFunc("/items/{id}", s.deleteItem).Methods(http.MethodDelete, http.MethodOptions)
+	router.Use(toDoServerCorsMiddleware(router))
+	//router.Use(mux.CORSMethodMiddleware(router))
 	s.Handler = router
 
 	return s
 }
 
+// Enable cors for all origins.
+// NOT for production use
+func toDoServerCorsMiddleware(r *mux.Router) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token, Authorization")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+			if req.Method == "OPTIONS" {
+				w.WriteHeader(204)
+				return
+			}
+
+			next.ServeHTTP(w, req)
+		})
+	}
+}
+
 // welcomeHander shows a simple welcome message
 func (s *TodoServer) welcomeHandler(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Great scott! Welcome to ToDo server!"))
+	w.Write([]byte("Great scott! Welcome to ToDo server!"))
 }
 
 // showItems returns all the todo items stored into the store
@@ -79,7 +100,7 @@ func (s *TodoServer) storeItem(w http.ResponseWriter, r *http.Request) {
 
 // updateItem updates an item using the given id to find it
 // and the PUT body to update fields
-func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
+func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseInt(vars["id"], 10, 16)
 
@@ -92,20 +113,18 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	var jsonBody map[string]string
-	err = json.NewDecoder(r.Body).Decode(&jsonBody)
+	var item model.Item
+	err = json.NewDecoder(r.Body).Decode(&item)
 
 	if err != nil {
 		common.ErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("Error on decoding update payload: %v", err))
 		return
 	}
 
-	order, err := strconv.ParseInt(jsonBody["order"], 10, 16)
-
 	err = core.NewItem(s.store).Update(&model.Item{
 		Id: int(id),
-		Description: jsonBody["description"],
-		Order: int(order),
+		Description: item.Description,
+		Order: int(item.Order),
 	})
 
 	if err != nil {

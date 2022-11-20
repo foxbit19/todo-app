@@ -3,8 +3,8 @@ package store
 import (
 	"testing"
 
-	"github.com/foxbit19/todo-app/server/src/model"
-	testingCommon "github.com/foxbit19/todo-app/server/src/testing"
+	"github.com/foxbit19/todo-app/server/model"
+	testingCommon "github.com/foxbit19/todo-app/server/testing"
 	"gotest.tools/v3/assert"
 )
 

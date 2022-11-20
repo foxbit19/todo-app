@@ -4,7 +4,7 @@ import (
 	"io"
 	"testing"
 
-	testingCommon "github.com/foxbit19/todo-app/server/src/testing"
+	testingCommon "github.com/foxbit19/todo-app/server/testing"
 )
 
 func TestTape_Write(t *testing.T) {

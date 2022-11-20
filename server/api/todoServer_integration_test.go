@@ -4,9 +4,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/foxbit19/todo-app/server/src/model"
-	"github.com/foxbit19/todo-app/server/src/store"
-	testingCommon "github.com/foxbit19/todo-app/server/src/testing"
+	"github.com/foxbit19/todo-app/server/model"
+	"github.com/foxbit19/todo-app/server/store"
+	testingCommon "github.com/foxbit19/todo-app/server/testing"
 	"gotest.tools/v3/assert"
 )
 

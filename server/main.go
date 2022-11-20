@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/foxbit19/todo-app/server/src/api"
-	"github.com/foxbit19/todo-app/server/src/store"
+	"github.com/foxbit19/todo-app/server/api"
+	"github.com/foxbit19/todo-app/server/store"
 	"github.com/joho/godotenv"
 )
 
@@ -20,7 +20,7 @@ func loadEnvFile() {
 
 func main()  {
 	loadEnvFile()
-	database, err := os.OpenFile(fmt.Sprintf("../db/%s", os.Getenv("DB_FILE_NAME")), os.O_RDWR|os.O_CREATE, 0666)
+	database, err := os.OpenFile(fmt.Sprintf("./db/%s", os.Getenv("DB_FILE_NAME")), os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
 		log.Fatalf("Error on create or open database %s: %v", os.Getenv("DB_FILE_NAME"), err)

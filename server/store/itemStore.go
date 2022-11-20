@@ -1,6 +1,6 @@
 package store
 
-import "github.com/foxbit19/todo-app/server/src/model"
+import "github.com/foxbit19/todo-app/server/model"
 
 type ItemStore interface {
 	// GetItem gets an item from the store
