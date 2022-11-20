@@ -40,27 +40,11 @@ describe('show todo', () => {
         expect(updateHandler.called).toBeTruthy()
     })
 
-    test('it launch an event when delete button is clicked', () => {
-        const deleteHandler = sinon.spy();
-
-        render(<ShowTodo open={true} item={item} onDeleteClick={deleteHandler} />)
-        clickButton('delete_button')
-        expect(deleteHandler.called).toBeTruthy()
-    })
-
     test('it launch update event providing the item as argument', () => {
         const updateHandler = sinon.spy();
 
         render(<ShowTodo open={true} item={item} onUpdateClick={updateHandler} />)
         clickButton('update_button')
         expect(updateHandler.calledWith(item)).toBeTruthy()
-    })
-
-    test('it launch delete event providing the item as argument', () => {
-        const deleteHandler = sinon.spy();
-
-        render(<ShowTodo open={true} item={item} onDeleteClick={deleteHandler} />)
-        clickButton('delete_button')
-        expect(deleteHandler.calledWith(item)).toBeTruthy()
     })
 })
