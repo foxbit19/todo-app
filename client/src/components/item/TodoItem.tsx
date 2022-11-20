@@ -30,12 +30,13 @@ const TodoItem = (props: Props) => {
     return (
         <Draggable draggableId={props.item.id.toString()} index={props.index}>
             {(provided) => (
-                <CustomPaper data-testid={`todo_${props.item.id}`} key={props.index} ref={provided.innerRef}
+                <CustomPaper data-testid={`todo_${props.item.id}`} ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}>
                     <ListItem>
                         <Checkbox icon={<CircleIcon />} checkedIcon={<CheckIcon />} onClick={props.onComplete} />
                         <Typography onClick={props.onClick}>{normalizeDescription(props.item.description)}</Typography>
+                        <Typography fontWeight={'bold'}></Typography>
                     </ListItem>
                 </CustomPaper>
             )}

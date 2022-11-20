@@ -1,4 +1,4 @@
-import { Alert, AlertColor, AlertTitle, Box, Button, createTheme, CssBaseline, Grid, Paper, styled, ThemeProvider } from '@mui/material';
+import { Alert, AlertColor, AlertTitle, Box, Button, createTheme, CssBaseline, Fab, Grid, Paper, styled, ThemeProvider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TodoList from './components/list/TodoList';
 import ShowTodo from './components/showTodo/ShowTodo';
@@ -101,13 +101,29 @@ function App() {
         }
     }
 
+    const handleReorder = async (sourceIndex: number, destinationIndex: number) => {
+        try {
+            const item = items[sourceIndex]
+            item.order = destinationIndex
+            await service.update(item)
+            getAllItems()
+        } catch (error: any) {
+            console.error(error)
+            setAlert(buildAlert('error', 'Item reordering fails', 'This item cannot be reordered'))
+        } finally {
+            setShowNew(false)
+        }
+    }
+
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
             <Title />
             {alert}
-            <Button data-testid='new_button' variant='contained' startIcon={<AddIcon />} onClick={openNewModal}>Add new</Button>
-            <TodoList items={items} onItemClick={handleItemClick} onComplete={handleComplete} />
+            <Fab data-testid='new_button' color="primary" style={{ position: 'absolute', bottom: '2em', right: '2em' }} onClick={openNewModal}>
+                <AddIcon />
+            </Fab>
+            <TodoList items={items} onItemClick={handleItemClick} onComplete={handleComplete} onReorder={handleReorder} />
             {<NewTodo open={showNew} onClose={handleClose} onSaveClick={handleSave} />}
             {item && <ShowTodo open={showTodo} item={item} onClose={handleClose} onUpdateClick={openUpdateModal} />}
             {item && <UpdateTodo open={showUpdate} item={item} onClose={handleClose} onUpdateClick={handleUpdate} />}

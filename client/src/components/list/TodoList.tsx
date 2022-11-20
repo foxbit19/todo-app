@@ -1,18 +1,25 @@
 import React from 'react'
 import { List } from '@mui/material'
 import Item from '../../models/item'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
 import TodoItem from '../item/TodoItem';
 
 interface Props {
     items: Item[]
     onItemClick?: (item: Item) => void
     onComplete?: (item: Item) => void
+    onReorder?: (sourceIndex: number, destinationIndex: number) => void
 }
 
 const TodoList = (props: Props) => {
+    const handleDragEnd = (result: DropResult) => {
+        if (props.onReorder && result.destination) {
+            props.onReorder(result.source.index, result.destination.index)
+        }
+    }
+
     return (
-        <DragDropContext onDragEnd={() => { }}>
+        <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId='1'>
                 {(provided) => <List key={1} data-testid="list" ref={provided.innerRef} {...provided.droppableProps}>
                     {props.items.map((item: Item, index: number) => (
