@@ -31,7 +31,7 @@ const NewTodo = (props: Props) => {
             <DialogContentText>
                 Enter a description for your new todo item.
             </DialogContentText>
-            <TextField required multiline fullWidth margin='dense' label='Description' data-testid='todo_description' value={inputValue} onChange={handleChange} variant='standard' />
+            <TextField autoFocus required fullWidth margin='dense' label='Description' data-testid='todo_description' value={inputValue} onChange={handleChange} variant='standard' />
         </DialogContent>
         <DialogActions>
             <Button onClick={props.onClose}>Close</Button>

@@ -28,7 +28,7 @@ const UpdateTodo = (props: Props) => {
             <DialogContentText>
                 Enter the todo description in order to update it.
             </DialogContentText>
-            <TextField required multiline fullWidth margin='dense' label='Description' data-testid='description' value={inputValue} onChange={handleChange} variant='standard' />
+            <TextField autoFocus required fullWidth margin='dense' label='Description' data-testid='description' value={inputValue} onChange={handleChange} variant='standard' />
         </DialogContent>
         <DialogActions>
             <Button onClick={props.onClose}>Close</Button>
