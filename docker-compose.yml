@@ -1,0 +1,25 @@
+version: '3'
+services:
+  #client:
+  #  container_name: todoapp-client
+  #  restart: unless-stopped
+  #  build: ./client
+  #  ports:
+  #    - "80:3000"
+  #  environment:
+  #    - REACT_APP_BASE_URL=http://localhost:8080
+  #  links:
+  #    - server
+  server:
+    container_name: todoapp-server
+    restart: unless-stopped
+    build: ./server
+    ports:
+      - "8080:8000"
+    environment:
+      - DB_FILE_NAME=db.json
+      - PORT=8000
+    volumes:
+      - database:/usr/server/db
+volumes:
+  database:
