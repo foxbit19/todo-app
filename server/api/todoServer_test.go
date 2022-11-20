@@ -178,21 +178,16 @@ func TestStoreTodoItems(t *testing.T) {
 }
 
 func TestUpdateTodoItem(t *testing.T)  {
-	store := testingCommon.StubItemStore{
-		&[]model.Item{
-			{
-				Id:          2,
-				Description: "this is my second todo",
-				Order:       2,
-			},
-		},
-	}
-	server := NewTodoServer(&store)
-
 	t.Run("it updates an existing item", func (t *testing.T)  {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
 
 		description := "I've made a mistake, this is my third todo"
-		body, buffer := map[string]string{"description": description}, new(bytes.Buffer)
+		body, buffer := &model.Item{
+			Id:          2,
+			Description: description,
+			Order:       2,
+		}, new(bytes.Buffer)
+
 		err := json.NewEncoder(buffer).Encode(body)
 		if err != nil {
 			t.Errorf("Unable to encode JSON %q: %v", body, err)
@@ -210,6 +205,8 @@ func TestUpdateTodoItem(t *testing.T)  {
 	})
 
 	t.Run("it responds with bad request when trying to update a not-existing item", func (t *testing.T)  {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
+
 		body, buffer := map[string]string{"description": "123123"}, new(bytes.Buffer)
 		err := json.NewEncoder(buffer).Encode(body)
 		if err != nil {
@@ -225,6 +222,8 @@ func TestUpdateTodoItem(t *testing.T)  {
 	})
 
 	t.Run("it responds with bad request when trying to update without a body", func (t *testing.T)  {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
+
 		request, _ := http.NewRequest(http.MethodPut, "/items/2", nil)
 		response := httptest.NewRecorder()
 

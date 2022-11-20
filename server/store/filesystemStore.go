@@ -89,6 +89,7 @@ func (s *FileSystemStore) UpdateItem(id int, item *model.Item) error {
 	}
 
 	found.Description = item.Description
+	found.Order = item.Order
 
 	encodeDatabase(&s.items, s.Database)
 

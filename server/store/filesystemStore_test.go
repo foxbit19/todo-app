@@ -116,7 +116,7 @@ func TestFileSystemStore(t *testing.T) {
 		assert.DeepEqual(t, *got, want)
 	})
 
-	t.Run("updated an existing todo item", func(t *testing.T) {
+	t.Run("updated the description of an existing todo item", func(t *testing.T) {
 		database, cleanDb := testingCommon.CreateTempFile(t, `[
 			{"Id": 3, "Description": "third todo", "Order": 1}
 		]`)
@@ -131,6 +131,24 @@ func TestFileSystemStore(t *testing.T) {
 		got := store.GetItem(3)
 
 		assert.DeepEqual(t, got.Description, want)
+	})
+
+	t.Run("it updates the order of an existing todo item", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[
+			{"Id": 3, "Description": "third todo", "Order": 1}
+		]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		want := 5
+		store.UpdateItem(3, &model.Item{
+			Description: "third todo",
+			Order: want,
+		})
+		got := store.GetItem(3)
+
+		assert.DeepEqual(t, got.Order, want)
 	})
 
 	t.Run("it gives an error when trying to updated an non-existing todo item", func(t *testing.T) {

@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/foxbit19/todo-app/server/model"
 	"github.com/foxbit19/todo-app/server/store"
@@ -47,9 +48,10 @@ func (i *Item) Update(item *model.Item) error {
 		return fmt.Errorf("the item to update was not found %v", item)
 	}
 
-	if item.Order > 0 && currentItem.Order != item.Order {
+	if item.Order >= 0 && currentItem.Order != item.Order {
+		log.Printf("Change the order of the item: from %d to %d", currentItem.Order, item.Order)
 		// we need to change the order
-		i.changeOrder(currentItem, item.Order)
+		item = i.changeOrder(currentItem, item.Order)
 	}
 
 	err := i.store.UpdateItem(item.Id, item)
@@ -67,11 +69,12 @@ func (i *Item) Delete(id int) {
 }
 
 // Change the order of an item using a function to shift items
-func (i *Item) changeOrder(currentItem *model.Item, order int) {
+func (i *Item) changeOrder(currentItem *model.Item, order int) *model.Item {
 	i.reorder(currentItem, order)
 
 	currentItem.Order = order
-	//i.store.UpdateItem(currentItem.Id, currentItem)
+
+	return currentItem
 }
 
 // getNextOrder is a private function to find the next order
@@ -100,11 +103,16 @@ func (i *Item) reorder(itemToOrder *model.Item, order int) {
 	for _, item := range *items {
 		// we don't want to
 		// 1-touch the order of the element to reorder
-		// 2-change the order of the items that follows item to order
+		// 2-change the order of the items that follow item to order (with the old order)
 		// 3-change the order of the items with an order < than the new one
-		if item.Id != itemToOrder.Id && itemToOrder.Order > item.Order && item.Order >= order {
-			item.Order++
-			i.store.UpdateItem(item.Id, &item)
+		if item.Id != itemToOrder.Id {
+			if item.Order <= itemToOrder.Order && item.Order >= order {
+				item.Order++
+				i.store.UpdateItem(item.Id, &item)
+			} else if item.Order > itemToOrder.Order && item.Order < order {
+				item.Order--
+				i.store.UpdateItem(item.Id, &item)
+			}
 		}
 	}
 }

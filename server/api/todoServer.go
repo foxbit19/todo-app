@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -120,6 +121,8 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request) {
 		common.ErrorResponse(w, http.StatusBadRequest, fmt.Sprintf("Error on decoding update payload: %v", err))
 		return
 	}
+
+	log.Printf("Try to update item %+v", item)
 
 	err = core.NewItem(s.store).Update(&model.Item{
 		Id: int(id),
