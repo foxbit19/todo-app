@@ -22,18 +22,18 @@ describe('update todo', () => {
     }
 
     test('it matches snapshot', () => {
-        const view = render(<UpdateTodo item={item} />);
+        const view = render(<UpdateTodo open={true} item={item} />);
         expect(view).toMatchSnapshot();
     });
 
     test('it shows the "item update" text', () => {
-        render(<UpdateTodo item={item} />)
+        render(<UpdateTodo open={true} item={item} />)
 
         expect(screen.getByText('Item update')).toBeInTheDocument()
     })
 
     test('it shows the description of the provided item into an input box', () => {
-        render(<UpdateTodo item={item} />)
+        render(<UpdateTodo open={true} item={item} />)
 
         expect(getInputElement().value).toEqual(item.description)
     })
@@ -41,7 +41,7 @@ describe('update todo', () => {
     test('it launch an event when the update button is pressed', () => {
         const updateHandler = sinon.spy();
 
-        render(<UpdateTodo item={item} onUpdateClick={updateHandler} />)
+        render(<UpdateTodo open={true} item={item} onUpdateClick={updateHandler} />)
         updateButtonClick()
 
         expect(updateHandler.called).toBeTruthy()
@@ -50,7 +50,7 @@ describe('update todo', () => {
     test('it launch an event with the modified item when the update button is pressed', () => {
         const updateHandler = sinon.spy();
 
-        render(<UpdateTodo item={item} onUpdateClick={updateHandler} />)
+        render(<UpdateTodo open={true} item={item} onUpdateClick={updateHandler} />)
 
         const newDescription = 'remember to test everything'
 
