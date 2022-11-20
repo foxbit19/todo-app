@@ -16,18 +16,18 @@ describe('show todo', () => {
     }
 
     test('it matches snapshot', () => {
-        const view = render(<ShowTodo item={item} />);
+        const view = render(<ShowTodo open={true} item={item} />);
         expect(view).toMatchSnapshot();
     });
 
     test('it shows the description of the provided item', () => {
-        render(<ShowTodo item={item} />)
+        render(<ShowTodo open={true} item={item} />)
 
         expect(screen.getByText(item.description)).toBeInTheDocument()
     })
 
     test('it shows the "item details" text', () => {
-        render(<ShowTodo item={item} />)
+        render(<ShowTodo open={true} item={item} />)
 
         expect(screen.getByText('Item details')).toBeInTheDocument()
     })
@@ -35,7 +35,7 @@ describe('show todo', () => {
     test('it launch an event when update button is clicked', () => {
         const updateHandler = sinon.spy();
 
-        render(<ShowTodo item={item} onUpdateClick={updateHandler} />)
+        render(<ShowTodo open={true} item={item} onUpdateClick={updateHandler} />)
         clickButton('update_button')
         expect(updateHandler.called).toBeTruthy()
     })
@@ -43,7 +43,7 @@ describe('show todo', () => {
     test('it launch an event when delete button is clicked', () => {
         const deleteHandler = sinon.spy();
 
-        render(<ShowTodo item={item} onDeleteClick={deleteHandler} />)
+        render(<ShowTodo open={true} item={item} onDeleteClick={deleteHandler} />)
         clickButton('delete_button')
         expect(deleteHandler.called).toBeTruthy()
     })
@@ -51,7 +51,7 @@ describe('show todo', () => {
     test('it launch update event providing the item as argument', () => {
         const updateHandler = sinon.spy();
 
-        render(<ShowTodo item={item} onUpdateClick={updateHandler} />)
+        render(<ShowTodo open={true} item={item} onUpdateClick={updateHandler} />)
         clickButton('update_button')
         expect(updateHandler.calledWith(item)).toBeTruthy()
     })
@@ -59,7 +59,7 @@ describe('show todo', () => {
     test('it launch delete event providing the item as argument', () => {
         const deleteHandler = sinon.spy();
 
-        render(<ShowTodo item={item} onDeleteClick={deleteHandler} />)
+        render(<ShowTodo open={true} item={item} onDeleteClick={deleteHandler} />)
         clickButton('delete_button')
         expect(deleteHandler.calledWith(item)).toBeTruthy()
     })

@@ -5,23 +5,45 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <div
+      <ul
+        class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
+        data-rbd-droppable-context-id="0"
+        data-rbd-droppable-id="1"
         data-testid="list"
       >
         <div>
           There are no todos to show
         </div>
-      </div>
+      </ul>
+    </div>
+    <div
+      aria-atomic="true"
+      aria-live="assertive"
+      id="rbd-announcement-0"
+      style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%);"
+    />
+    <div
+      id="rbd-hidden-text-0-hidden-text-0"
+      style="display: none;"
+    >
+      
+  Press space bar to start a drag.
+  When dragging you can use the arrow keys to move the item around and escape to cancel.
+  Some screen readers may require you to be in focus mode or to use your pass through key
+
     </div>
   </body>,
   "container": <div>
-    <div
+    <ul
+      class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
+      data-rbd-droppable-context-id="0"
+      data-rbd-droppable-id="1"
       data-testid="list"
     >
       <div>
         There are no todos to show
       </div>
-    </div>
+    </ul>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],
