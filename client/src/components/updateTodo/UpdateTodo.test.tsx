@@ -58,8 +58,6 @@ describe('update todo', () => {
         userEvent.type(getInputElement(), newDescription)
         updateButtonClick()
 
-        console.log(updateHandler.args[0][0])
-
         expect(updateHandler.args[0][0].description).toBe(item.description)
     })
 })

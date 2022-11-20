@@ -17,20 +17,9 @@ describe('new todo component', () => {
         userEvent.click(button)
     }
 
-    test('it clears the input field once save button is clicked', () => {
-        render(<NewTodo />);
-        typeDescription('wonderful!')
-        clickSaveButton()
+    test('it matches snapshot', () => {
+        const view = render(<NewTodo open={true} />);
+        expect(view).toMatchSnapshot();
+    });
 
-        expect(getInputElement().value).toEqual('');
-    })
-
-    test('it shows the items into page after save', () => {
-        render(<NewTodo />);
-        typeDescription('my todo item')
-        clickSaveButton()
-
-        const item = screen.getByText(/my todo item/i);
-        expect(item).toBeInTheDocument();
-    })
 })

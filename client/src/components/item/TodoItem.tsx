@@ -1,7 +1,7 @@
 import React from 'react'
 import Item from '../../models/item'
 import { Draggable } from 'react-beautiful-dnd'
-import { Box, Checkbox, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { Box, Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, styled, Typography } from '@mui/material'
 import CircleIcon from '@mui/icons-material/Circle'
 import CheckIcon from '@mui/icons-material/CheckCircle'
 
@@ -12,6 +12,16 @@ interface Props {
     onComplete?: () => void
 }
 
+const CustomPaper: any = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    margin: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
+
+
 const TodoItem = (props: Props) => {
     const normalizeDescription = (description: string) => {
         return description.length > 50 ? `${description.substring(0, 50)}...` : description
@@ -20,14 +30,17 @@ const TodoItem = (props: Props) => {
     return (
         <Draggable draggableId={props.item.id.toString()} index={props.index}>
             {(provided) => (
-                <ListItemButton data-testid={`todo_${props.item.id}`} key={props.index} ref={provided.innerRef}
+                <CustomPaper data-testid={`todo_${props.item.id}`} key={props.index} ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}>
-                    <Checkbox icon={<CircleIcon />} checkedIcon={<CheckIcon />} onClick={props.onComplete} />
-                    <ListItemText onClick={props.onClick}>{normalizeDescription(props.item.description)}</ListItemText>
-                </ListItemButton>
+                    <ListItem>
+                        <Checkbox icon={<CircleIcon />} checkedIcon={<CheckIcon />} onClick={props.onComplete} />
+                        <Typography onClick={props.onClick}>{normalizeDescription(props.item.description)}</Typography>
+                    </ListItem>
+                </CustomPaper>
             )}
         </Draggable>
+
     )
 }
 
