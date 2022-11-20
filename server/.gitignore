@@ -21,8 +21,8 @@
 go.work
 
 # Avoid to commit binary files
-*/src
-*/server
+src
+server
 
 # Ignore database
-*/todo.db.json
+db/*.json
