@@ -164,7 +164,8 @@ describe('Item service', () => {
             jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item>(
                 {
                     method: HTTPMethod.PUT,
-                    body: itemMock1
+                    queryString: itemMock1.id.toString(),
+                    body: itemMock1,
                 },
                 {
                     status: 200,
@@ -180,7 +181,8 @@ describe('Item service', () => {
         test('it throws an error if response status is different from 200', async () => {
             jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item[]>(
                 {
-                    method: HTTPMethod.PUT
+                    method: HTTPMethod.PUT,
+                    queryString: itemMock1.id.toString()
                 },
                 {
                     status: 400,
