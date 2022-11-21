@@ -134,6 +134,8 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request) {
 		Id: int(id),
 		Description: item.Description,
 		Order: int(item.Order),
+		Completed: item.Completed,
+		CompletedDate: item.CompletedDate,
 	})
 
 	if err != nil {
