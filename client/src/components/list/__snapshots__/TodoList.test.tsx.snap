@@ -36,9 +36,11 @@ Object {
             </h6>
           </div>
         </div>
-        <div>
+        <h4
+          class="MuiTypography-root MuiTypography-h4 MuiTypography-alignCenter css-1nxg358-MuiTypography-root"
+        >
           There are no todos to show
-        </div>
+        </h4>
       </div>
     </div>
   </body>,
@@ -74,9 +76,11 @@ Object {
           </h6>
         </div>
       </div>
-      <div>
+      <h4
+        class="MuiTypography-root MuiTypography-h4 MuiTypography-alignCenter css-1nxg358-MuiTypography-root"
+      >
         There are no todos to show
-      </div>
+      </h4>
     </div>
   </div>,
   "debug": [Function],
