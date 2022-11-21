@@ -2,6 +2,7 @@ package testing
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/foxbit19/todo-app/server/model"
 )
@@ -30,7 +31,12 @@ func (s *StubItemStore) GetItem(id int) *model.Item {
 }
 
 func (s *StubItemStore) GetItems() *[]model.Item {
-	return s.Todo
+	items := *s.Todo
+	sort.Slice(items, func (i int, j int) bool  {
+		return items[i].Order < items[j].Order
+	})
+
+	return &items
 }
 
 func (s *StubItemStore) StoreItem(description string, order int) int {
@@ -65,6 +71,14 @@ func (s *StubItemStore) DeleteItem(id int) {
 	}
 	todo := append((*s.Todo)[:index], (*s.Todo)[index+1:]...)
 	s.Todo = &todo
+}
+
+func (s *StubItemStore) Reorder(itemsIds []int) {
+	for index, id := range itemsIds {
+		item := s.GetItem(id)
+		item.Order = index + 1
+		s.UpdateItem(id, item)
+	}
 }
 
 func (s *StubItemStore) findItem(id int) *model.Item {

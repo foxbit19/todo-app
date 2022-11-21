@@ -277,3 +277,37 @@ func TestDeleteTodoItem(t *testing.T)  {
 		assert.Equal(t, response.Code, http.StatusBadRequest)
 	})
 }
+
+func TestReorderTodoItem(t *testing.T)  {
+	t.Run("it reorder an item", func (t *testing.T)  {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
+		request, _ := http.NewRequest(http.MethodPatch, "/reorder/2/1", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusAccepted)
+		/* got := server.store.GetItem(2).Order
+		want := 1
+
+		assert.Equal(t, got, want) */
+	})
+/*
+	t.Run("it responds 200 even if the item to delete does not exists", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodDelete, "/items/55", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusOK)
+	})
+
+	t.Run("it sends 400 if id is not int", func (t *testing.T)  {
+		request, _ := http.NewRequest(http.MethodDelete, "/items/abc", nil)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusBadRequest)
+	}) */
+}

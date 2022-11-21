@@ -16,4 +16,7 @@ type ItemStore interface {
 	// DeleteItem deletes an item from the store using
 	// its id
 	DeleteItem(id int)
+	// Reorder receives an ordered array of item ids.
+	// It assign all the orders starting from 1.
+	Reorder(itemsIds []int)
 }

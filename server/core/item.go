@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"log"
+	"sort"
 
 	"github.com/foxbit19/todo-app/server/model"
 	"github.com/foxbit19/todo-app/server/store"
@@ -40,18 +40,10 @@ func (i *Item) Create(description string) *model.Item {
 
 // Update updates the item and manage errors
 func (i *Item) Update(item *model.Item) error {
-	// before update the elements, we need to verify if the
-	// order was changed
 	currentItem := i.store.GetItem(item.Id)
 
 	if currentItem == nil {
 		return fmt.Errorf("the item to update was not found %v", item)
-	}
-
-	if item.Order >= 0 && currentItem.Order != item.Order {
-		log.Printf("Change the order of the item: from %d to %d", currentItem.Order, item.Order)
-		// we need to change the order
-		item = i.changeOrder(currentItem, item.Order)
 	}
 
 	err := i.store.UpdateItem(item.Id, item)
@@ -66,15 +58,6 @@ func (i *Item) Update(item *model.Item) error {
 // Delete deletes an item using the func of the store
 func (i *Item) Delete(id int) {
 	i.store.DeleteItem(id)
-}
-
-// Change the order of an item using a function to shift items
-func (i *Item) changeOrder(currentItem *model.Item, order int) *model.Item {
-	i.reorder(currentItem, order)
-
-	currentItem.Order = order
-
-	return currentItem
 }
 
 // getNextOrder is a private function to find the next order
@@ -92,27 +75,56 @@ func (i *Item) getNextOrder() int {
 	return maxOrder+1
 }
 
-// reorder is a private function to edit the orders of all the items
-// that satisfy the following conditions:
-// 1 - have the order greater or equals of the new order (the items that follows the item
-// 		to order when the new position takes place)
-// 2 - have the order less than the current item order
-func (i *Item) reorder(itemToOrder *model.Item, order int) {
-	items := i.store.GetItems()
+func (i *Item) Reorder(sourceId int, targetId int) {
+	source := i.Get(sourceId)
+	target := i.Get(targetId)
+	// to avoid store with memory storage
+	sourceOrder := source.Order
+	targetOrder := target.Order
+	items := *i.GetAll()
 
-	for _, item := range *items {
-		// we don't want to
-		// 1-touch the order of the element to reorder
-		// 2-change the order of the items that follow item to order (with the old order)
-		// 3-change the order of the items with an order < than the new one
-		if item.Id != itemToOrder.Id {
-			if item.Order <= itemToOrder.Order && item.Order >= order {
-				item.Order++
-				i.store.UpdateItem(item.Id, &item)
-			} else if item.Order > itemToOrder.Order && item.Order < order {
-				item.Order--
-				i.store.UpdateItem(item.Id, &item)
+
+	// this loop works only on the items in the reorder range:
+	// from source to target elements considering order.
+	// the other items are leave untouched
+	for i := 0; i < len(items); i++ {
+		// we don't want to touch the order of the source element
+		if items[i].Id != sourceId {
+			if items[i].Order < sourceOrder && items[i].Order >= target.Order {
+				// Raising a priority using order:
+				// we want to increase the order of an item of the list that satisfies
+				// the following conditions:
+				// 1 - it precedes the source item
+				// 2 - it follows, or it's equals, to the target item
+				items[i].Order++
+			} else if items[i].Order > sourceOrder && items[i].Order <= target.Order {
+				// Lowering a priority using order:
+				// we want to decrease the order of an item of the list that satisfies
+				// the following conditions:
+				// 1 - it follows the source item
+				// 2 - it precedes, or it's equals, to the target item
+				items[i].Order--
 			}
+		} else {
+			// fix source item order
+			items[i].Order = targetOrder
 		}
 	}
+
+	// sort all the items by order using slice function
+	sort.Slice(items, func (i int, j int) bool  {
+		return items[i].Order < items[j].Order
+	})
+
+	i.store.Reorder(*i.mapIds(&items))
+}
+
+func (i *Item) mapIds(items *[]model.Item) *[]int {
+	ids := make([]int, len(*items))
+
+	for i, item := range *items {
+		ids[i] = item.Id
+	}
+
+	return &ids
 }

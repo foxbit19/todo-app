@@ -99,23 +99,26 @@ func TestBusinessLogic(t *testing.T) {
 		}
 	})
 
-	t.Run("it changes an order of an item", func(t *testing.T) {
+	t.Run("it adds priority to an item changing its order", func(t *testing.T) {
 		store = testingCommon.NewStubItemStore()
 		core := NewItem(store)
 
 		core.Create("new item 1")
 		core.Create("new item 2")
 
-		item := core.Get(3)
-		core.Update(&model.Item{
-			Id: item.Id,
-			Description: item.Description,
-			Order: 1,
-		})
+		source := core.Get(3)
+		target := core.Get(1)
+
+		core.Reorder(source.Id, target.Id)
 
 		got := core.GetAll()
 
 		want := []model.Item{
+			{
+				Id:          3,
+				Description: "new item 1",
+				Order:       1,
+			},
 			{
 				Id:          1,
 				Description: "this is my first todo",
@@ -127,13 +130,48 @@ func TestBusinessLogic(t *testing.T) {
 				Order:       3,
 			},
 			{
+				Id:          4,
+				Description: "new item 2",
+				Order:       4,
+			},
+		}
+
+		assert.DeepEqual(t, *got, want)
+	})
+
+	t.Run("it lowers the priority of an item changing its order", func(t *testing.T) {
+		store = testingCommon.NewStubItemStore()
+		core := NewItem(store)
+
+		core.Create("new item 1")
+		core.Create("new item 2")
+
+		source := core.Get(2)
+		target := core.Get(4)
+
+		core.Reorder(source.Id, target.Id)
+
+		got := core.GetAll()
+
+		want := []model.Item{
+			{
+				Id:          1,
+				Description: "this is my first todo",
+				Order:       1,
+			},
+			{
 				Id:          3,
 				Description: "new item 1",
-				Order:       1,
+				Order:       2,
 			},
 			{
 				Id:          4,
 				Description: "new item 2",
+				Order:       3,
+			},
+			{
+				Id:          2,
+				Description: "this is my second todo",
 				Order:       4,
 			},
 		}

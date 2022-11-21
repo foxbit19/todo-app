@@ -112,6 +112,15 @@ func (s *FileSystemStore) DeleteItem(id int) {
 	encodeDatabase(&s.items, s.Database)
 }
 
+func (s *FileSystemStore) Reorder(itemsIds []int) {
+	for index, id := range itemsIds {
+		item := s.GetItem(id)
+		item.Order = index + 1
+		s.UpdateItem(id, item)
+	}
+}
+
+
 // findItem is a private function to find an item
 // inside an array of items.
 // The id of the item to find is used to compare items

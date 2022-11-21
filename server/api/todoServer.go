@@ -31,6 +31,7 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 	router.HandleFunc("/items/", s.storeItem).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/items/{id}", s.updateItem).Methods(http.MethodPut, http.MethodOptions)
 	router.HandleFunc("/items/{id}", s.deleteItem).Methods(http.MethodDelete, http.MethodOptions)
+	router.HandleFunc("/reorder/{sourceId}/{targetId}", s.reorderItem).Methods(http.MethodPatch, http.MethodOptions)
 	router.Use(toDoServerCorsMiddleware(router))
 	//router.Use(mux.CORSMethodMiddleware(router))
 	s.Handler = router
@@ -45,7 +46,7 @@ func toDoServerCorsMiddleware(r *mux.Router) mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token, Authorization")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 
 			if req.Method == "OPTIONS" {
 				w.WriteHeader(204)
@@ -122,8 +123,6 @@ func (s *TodoServer) updateItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Try to update item %+v", item)
-
 	err = core.NewItem(s.store).Update(&model.Item{
 		Id: int(id),
 		Description: item.Description,
@@ -149,4 +148,24 @@ func (s *TodoServer) deleteItem(w http.ResponseWriter, r *http.Request)  {
 
 	core.NewItem(s.store).Delete(int(id))
 	w.WriteHeader(http.StatusOK)
+}
+
+func (s *TodoServer) reorderItem(w http.ResponseWriter, r *http.Request)  {
+	vars := mux.Vars(r)
+	sourceId, err := strconv.ParseInt(vars["sourceId"], 10, 16)
+
+	if err != nil {
+		log.Fatalf("Source id %s is not correct", vars["sourceId"])
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	targetId, err := strconv.ParseInt(vars["targetId"], 10, 16)
+
+	if err != nil {
+		log.Fatalf("Source id %s is not correct", vars["targetId"])
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	core.NewItem(s.store).Reorder(int(sourceId), int(targetId))
+	w.WriteHeader(http.StatusAccepted)
 }

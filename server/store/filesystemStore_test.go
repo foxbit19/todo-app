@@ -213,4 +213,20 @@ func TestFileSystemStore(t *testing.T) {
 			t.Errorf("got %v is not nil", got)
 		}
 	})
+
+	t.Run("it reorder the items", func(t *testing.T) {
+		database, cleanDb := testingCommon.CreateTempFile(t, `[]`)
+		defer cleanDb()
+
+		store, _ := NewFileSystemStore(database)
+
+		store.StoreItem("first todo", 1)
+		store.StoreItem("second todo", 1)
+
+		store.Reorder([]int{2,1})
+		got := *store.GetItems()
+
+		assert.Equal(t, got[0].Id, 2)
+		assert.Equal(t, got[1].Id, 1)
+	})
 }
