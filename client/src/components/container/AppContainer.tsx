@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react'
 import Container from '@mui/material/Container'
+import Appbar from '../appbar/Appbar'
 
 interface Props {
     children?: ReactElement
@@ -7,7 +8,9 @@ interface Props {
 
 const AppContainer = (props: Props) => {
     return (
-        <Container fixed>{props.children}</Container>
+        <Container fixed style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            {props.children}
+        </Container>
     )
 }
 

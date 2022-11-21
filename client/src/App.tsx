@@ -1,7 +1,6 @@
 import { Alert, AlertColor, AlertTitle, createTheme, CssBaseline, Fab, ThemeProvider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TodoList from './components/list/TodoList';
-import Title from './components/title/Title';
 import Item from './models/item';
 import ItemService from './services/itemService';
 import UpdateTodo from './components/updateTodo/UpdateTodo';
@@ -9,10 +8,15 @@ import AddIcon from '@mui/icons-material/Add'
 import NewTodo from './components/newTodo/NewTodo';
 import AppContainer from './components/container/AppContainer';
 import DeleteTodo from './components/deleteTodo/DeleteTodo';
+import Footer from './components/footer/Footer';
+import Appbar from './components/appbar/Appbar';
 
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
+        primary: {
+            main: '#EF1B53'
+        },
     },
 });
 
@@ -131,13 +135,13 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
+            <Appbar />
             <AppContainer>
                 <div>
-            <Title />
-            {alert}
-            <Fab data-testid='new_button' color="primary" style={{ position: 'absolute', bottom: '2em', right: '2em' }} onClick={openNewModal}>
-                <AddIcon />
-            </Fab>
+                    {alert}
+                    <Fab data-testid='new_button' color="primary" style={{ position: 'fixed', bottom: '2em', right: '2em' }} onClick={openNewModal}>
+                        <AddIcon />
+                    </Fab>
                     <TodoList
                         items={items}
                         onUpdate={openUpdateModal}
@@ -145,8 +149,9 @@ function App() {
                         onComplete={handleComplete}
                         onReorder={handleReorder}
                     />
+                    <Footer />
                     {<NewTodo open={showNew} onClose={handleClose} onSaveClick={handleSave} />}
-            {item && <UpdateTodo open={showUpdate} item={item} onClose={handleClose} onUpdateClick={handleUpdate} />}
+                    {item && <UpdateTodo open={showUpdate} item={item} onClose={handleClose} onUpdateClick={handleUpdate} />}
                     {item && <DeleteTodo open={showDelete} item={item} onClose={handleClose} onDeleteClick={handleDelete} />}
                 </div>
             </AppContainer>

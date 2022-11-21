@@ -1,8 +1,9 @@
 import React from 'react'
-import { List } from '@mui/material'
+import { Grid, List, Typography } from '@mui/material'
 import Item from '../../models/item'
 import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd'
 import TodoItem from '../item/TodoItem';
+import InfoIcon from '@mui/icons-material/Info'
 
 interface Props {
     items: Item[]
@@ -19,7 +20,17 @@ const TodoList = (props: Props) => {
         }
     }
 
-    return <>
+    return <div style={{ marginTop: '2em' }}>
+        <Grid container flexDirection='row' justifyContent='center' alignItems='center' spacing={2}>
+            <Grid item>
+                <InfoIcon />
+            </Grid>
+            <Grid item>
+                <Typography variant='subtitle2' align='center'>
+                    You can add, edit, delete and mark as complete an item. Drag an item over the list to change its priority.
+                </Typography>
+            </Grid>
+        </Grid>
         {props.items.length === 0 ?
             <div>There are no todos to show</div> : (
                 <DragDropContext onDragEnd={handleDragEnd}>
@@ -40,7 +51,7 @@ const TodoList = (props: Props) => {
                 </DragDropContext>
             )
         }
-    </>
+    </div>
 
 }
 
