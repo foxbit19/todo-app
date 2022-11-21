@@ -32,7 +32,7 @@ const TodoList = (props: Props) => {
             </Grid>
         </Grid>
         {props.items.length === 0 ?
-            <div>There are no todos to show</div> : (
+            <Typography align='center' margin={2} variant='h4'>There are no todos to show</Typography> : (
                 <DragDropContext onDragEnd={handleDragEnd}>
                     <Droppable droppableId='Todo'>
                         {
