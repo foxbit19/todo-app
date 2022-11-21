@@ -228,4 +228,37 @@ describe('Item service', () => {
             await expect(service.delete(1)).rejects.toThrowError('Could not delete this item: 1');
         })
     })
+
+    describe('reorder an item', () => {
+        test('it rises the priority of an item', async () => {
+            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
+                {
+                    method: HTTPMethod.PATCH,
+                },
+                {
+                    status: 202,
+                }
+            ))
+
+            const service = new ItemService();
+            const response = await service.reorder(2, 1)
+            expect(response).toEqual(2)
+        })
+
+        /*
+                test('it throws an error if response status is different from 200', async () => {
+                    jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
+                        {
+                            method: HTTPMethod.DELETE,
+                            queryString: '1'
+                        },
+                        {
+                            status: 400,
+                        }
+                    ))
+
+                    const service = new ItemService();
+                    await expect(service.delete(1)).rejects.toThrowError('Could not delete this item: 1');
+                }) */
+    })
 })

@@ -65,4 +65,14 @@ export default class ItemService implements Service<Item> {
             throw new Error(`Could not delete this item: ${id}`)
         }
     }
+
+    async reorder(sourceId: number, targetId: number): Promise<number> {
+        const response = await fetch(`${this.getBaseUrl()}/items/reorder/${sourceId}/${targetId}`, { method: HTTPMethod.PATCH })
+
+        if (response.status === 202) {
+            return sourceId
+        } else {
+            throw new Error(`Could not reorder item ${sourceId} with item ${targetId}`)
+        }
+    }
 }

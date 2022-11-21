@@ -9,4 +9,5 @@ export default interface Service<T> {
     create(item: T): Promise<T>
     update(item: T): Promise<T>
     delete(id: number): Promise<number>
+    reorder(sourceId: number, targetId: number): Promise<number>
 }

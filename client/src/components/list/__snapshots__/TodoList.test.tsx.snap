@@ -8,7 +8,7 @@ Object {
       <ul
         class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
         data-rbd-droppable-context-id="0"
-        data-rbd-droppable-id="1"
+        data-rbd-droppable-id="0"
         data-testid="list"
       />
       <div>
@@ -36,7 +36,7 @@ Object {
     <ul
       class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
       data-rbd-droppable-context-id="0"
-      data-rbd-droppable-id="1"
+      data-rbd-droppable-id="0"
       data-testid="list"
     />
     <div>

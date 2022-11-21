@@ -15,13 +15,6 @@ const darkTheme = createTheme({
     },
 });
 
-const buildAlert = (severity: AlertColor, title: string, message: string) => (
-    <Alert severity={severity} onClose={() => { }}>
-        <AlertTitle>{title}</AlertTitle>
-        {message}
-    </Alert>
-)
-
 function App() {
     const [items, setItems] = useState<Item[]>([])
     const [showNew, setShowNew] = useState<boolean>(false)
@@ -30,6 +23,13 @@ function App() {
     const [item, setItem] = useState<Item>()
     const [alert, setAlert] = useState<JSX.Element>(<></>)
     const service = new ItemService()
+
+    const buildAlert = (severity: AlertColor, title: string, message: string) => (
+        <Alert severity={severity} onClose={() => { setAlert(<></>) }}>
+            <AlertTitle>{title}</AlertTitle>
+            {message}
+        </Alert>
+    )
 
     const getAllItems = async () => {
         setItems(await service.getAll())
@@ -78,7 +78,6 @@ function App() {
     const handleComplete = async (item: Item) => {
         try {
             await service.delete(item.id)
-            setAlert(buildAlert('success', 'Item completed', 'Your item is now complete'))
             getAllItems()
         } catch (error: any) {
             console.error(error)
@@ -101,11 +100,9 @@ function App() {
         }
     }
 
-    const handleReorder = async (sourceIndex: number, destinationIndex: number) => {
+    const handleReorder = async (sourceIndex: number, targetIndex: number) => {
         try {
-            const item = items[sourceIndex]
-            item.order = destinationIndex
-            await service.update(item)
+            await service.reorder(items[sourceIndex].id, items[targetIndex].id)
             getAllItems()
         } catch (error: any) {
             console.error(error)

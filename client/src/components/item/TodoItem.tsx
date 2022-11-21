@@ -1,6 +1,6 @@
 import React from 'react'
 import Item from '../../models/item'
-import { Draggable } from 'react-beautiful-dnd'
+import { Draggable } from '@hello-pangea/dnd'
 import { Box, Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, styled, Typography } from '@mui/material'
 import CircleIcon from '@mui/icons-material/Circle'
 import CheckIcon from '@mui/icons-material/CheckCircle'
@@ -28,7 +28,7 @@ const TodoItem = (props: Props) => {
     }
 
     return (
-        <Draggable draggableId={props.item.id.toString()} index={props.index}>
+        <Draggable key={props.item.id} draggableId={`${props.item.id}${props.index}`} index={props.index} >
             {(provided) => (
                 <CustomPaper data-testid={`todo_${props.item.id}`} ref={provided.innerRef}
                     {...provided.draggableProps}
