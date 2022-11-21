@@ -20,7 +20,7 @@ const GenericDialog = (props: Props) => {
             {props.children}
         </DialogContent>
         <DialogActions>
-            <Button onClick={props.onClose}>Close</Button>
+            <Button data-testid='close_dialog_button' onClick={props.onClose}>Close</Button>
             {props.button}
         </DialogActions>
     </Dialog>

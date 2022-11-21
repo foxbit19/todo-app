@@ -12,7 +12,7 @@ const Appbar = (props: Props) => {
                 <Typography variant="h5" style={{ color: 'black', fontFamily: 'Satisfy' }} fontWeight='bold' flexGrow={1}>
                     Easy to do
                 </Typography>
-                <Button sx={{ color: 'black', marginLeft: 5 }} onClick={props.onShowCompletedClick}>
+                <Button data-testid='show_completed_button' sx={{ color: 'black', marginLeft: 5 }} onClick={props.onShowCompletedClick}>
                     show completed
                 </Button>
             </Toolbar>

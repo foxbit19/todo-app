@@ -30,7 +30,7 @@ const NewTodo = (props: Props) => {
         <GenericDialog open={props.open}
             title='New todo item'
             text={'Enter a description for your new todo item.'}
-            button={<Button data-testid='todo_save' variant='contained' onClick={handleSave}>Save</Button>}
+            button={<Button data-testid='save_button' variant='contained' onClick={handleSave}>Save</Button>}
             onClose={props.onClose}>
             <TextField autoFocus required fullWidth margin='dense' label='Description' data-testid='todo_description' value={inputValue} onChange={handleChange} variant='standard' />
         </GenericDialog>

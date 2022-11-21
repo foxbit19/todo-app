@@ -26,4 +26,13 @@ describe('Completed Item service', () => {
         const response = await service.getAll()
         expect(response).toEqual([itemMock1])
     })
+
+    test('it throws an exception on not implemented functions', async () => {
+        const service = new CompletedItemService();
+
+        await expect(service.get(1)).rejects.toThrow('Method not implemented.')
+        await expect(service.create(itemMock1)).rejects.toThrow('Method not implemented.')
+        await expect(service.update(itemMock1)).rejects.toThrow('Method not implemented.')
+        await expect(service.delete(1)).rejects.toThrow('Method not implemented.')
+    })
 })

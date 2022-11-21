@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`update todo it matches snapshot 1`] = `
+exports[`completed todos dialog it matches snapshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body
@@ -37,7 +37,7 @@ Object {
             class="MuiTypography-root MuiTypography-h6 MuiDialogTitle-root css-bdhsul-MuiTypography-root-MuiDialogTitle-root"
             id=":r0:"
           >
-            Item update
+            Completed items
           </h2>
           <div
             class="MuiDialogContent-root css-ypiqx9-MuiDialogContent-root"
@@ -45,40 +45,11 @@ Object {
             <p
               class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiDialogContentText-root css-qfso29-MuiTypography-root-MuiDialogContentText-root"
             >
-              Edit the todo description in order to update it.
+              These are your completed items reverse ordered by completed date.
             </p>
-            <div
-              class="MuiFormControl-root MuiFormControl-marginDense MuiFormControl-fullWidth MuiTextField-root css-1z10yd4-MuiFormControl-root-MuiTextField-root"
-              data-testid="description"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled Mui-focused Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-1c2i806-MuiFormLabel-root-MuiInputLabel-root"
-                data-shrink="true"
-                for=":r1:"
-                id=":r1:-label"
-              >
-                Description
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-wgai2y-MuiFormLabel-asterisk"
-                >
-                   
-                  *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-fullWidth Mui-focused MuiInputBase-formControl css-1a1fmpi-MuiInputBase-root-MuiInput-root"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiInput-input css-1x51dt5-MuiInputBase-input-MuiInput-input"
-                  id=":r1:"
-                  required=""
-                  type="text"
-                  value="this is my item"
-                />
-              </div>
-            </div>
+            <ul
+              class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
+            />
           </div>
           <div
             class="MuiDialogActions-root MuiDialogActions-spacing css-hlj6pa-MuiDialogActions-root"
@@ -90,17 +61,6 @@ Object {
               type="button"
             >
               Close
-              <span
-                class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-              />
-            </button>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium css-sghohy-MuiButtonBase-root-MuiButton-root"
-              data-testid="update_button"
-              tabindex="0"
-              type="button"
-            >
-              Update
               <span
                 class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
               />

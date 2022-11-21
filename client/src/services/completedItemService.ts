@@ -10,7 +10,7 @@ import { Remote } from './common/common'
  * is out of the scope of this project.
  */
 export default class CompletedItemService implements Service<Item> {
-    get(id: number): Promise<Item> {
+    async get(id: number): Promise<Item> {
         throw new Error("Method not implemented.");
     }
 
@@ -24,15 +24,15 @@ export default class CompletedItemService implements Service<Item> {
         }
     }
 
-    create(item: Item): Promise<Item> {
+    async create(item: Item): Promise<Item> {
         throw new Error("Method not implemented.");
     }
 
-    update(item: Item): Promise<Item> {
+    async update(item: Item): Promise<Item> {
         throw new Error("Method not implemented.");
     }
 
-    delete(id: number): Promise<number> {
+    async delete(id: number): Promise<number> {
         throw new Error("Method not implemented.");
     }
 }
