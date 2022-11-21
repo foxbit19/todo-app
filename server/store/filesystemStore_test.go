@@ -2,6 +2,7 @@ package store
 
 import (
 	"testing"
+	"time"
 
 	"github.com/foxbit19/todo-app/server/model"
 	testingCommon "github.com/foxbit19/todo-app/server/testing"
@@ -86,11 +87,20 @@ func TestFileSystemStore(t *testing.T) {
 
 		store.StoreItem("first todo", 1)
 		got := store.GetItem(1)
-		assert.DeepEqual(t, *got, model.Item{
+		want := model.Item{
 			Id: 1,
 			Description: "first todo",
 			Order: 1,
-		})
+			Completed: false,
+		}
+		assert.Equal(t, got.Id, want.Id)
+		assert.Equal(t, got.Description, want.Description)
+		assert.Equal(t, got.Order, want.Order)
+		assert.Equal(t, got.Completed, want.Completed)
+		// completed date default value needs to be in the correct format (RFC822Z)
+		_, err := time.Parse(time.RFC822Z,got.CompletedDate)
+		assert.NilError(t, err)
+
 	})
 
 	t.Run("Gives an error when database file is empty", func(t *testing.T) {
@@ -173,7 +183,7 @@ func TestFileSystemStore(t *testing.T) {
 		assert.DeepEqual(t, *got, want)
 	})
 
-	t.Run("updated the description of an existing todo item", func(t *testing.T) {
+	t.Run("it updates the description of an existing todo item", func(t *testing.T) {
 		database, cleanDb := testingCommon.CreateTempFile(t, `[
 			{"Id": 3, "Description": "third todo", "Order": 1}
 		]`)

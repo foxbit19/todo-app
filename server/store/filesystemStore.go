@@ -81,6 +81,9 @@ func (s *FileSystemStore) StoreItem(description string, order int) int {
 		Id:          s.findMaxItemId() + 1,
 		Description: description,
 		Order:       order,
+		// default time for completed date
+		// not used since completed = true
+		CompletedDate: time.Now().Format(time.RFC822Z),
 	})
 
 	encodeDatabase(&s.items, s.Database)
