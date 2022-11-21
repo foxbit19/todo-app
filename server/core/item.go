@@ -28,7 +28,7 @@ func (i *Item) Get(id int) *model.Item {
 
 // GetAll gets all items using the store
 func (i *Item) GetAll() *[]model.Item {
-	return i.store.GetItems()
+	return i.store.GetItems(false)
 }
 
 // Create creates a new item using description
@@ -66,7 +66,7 @@ func (i *Item) Delete(id int) {
 func (i *Item) getNextOrder() int {
 	maxOrder := 0
 
-	for _, item := range *i.store.GetItems() {
+	for _, item := range *i.store.GetItems(false) {
 		if item.Order > maxOrder {
 			maxOrder = item.Order
 		}

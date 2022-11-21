@@ -6,7 +6,9 @@ type ItemStore interface {
 	// GetItem gets an item from the store
 	GetItem(id int) *model.Item
 	// GetItems get all the items from the store
-	GetItems() *[]model.Item
+	// It has an optional argument 'completed' to exctract
+	// only complement items
+	GetItems(completed bool) *[]model.Item
 	// StoreItem stores an item into the store using
 	// description and order
 	StoreItem(description string, order int) int

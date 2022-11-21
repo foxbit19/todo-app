@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/foxbit19/todo-app/server/helpers/slices"
 	"github.com/foxbit19/todo-app/server/model"
 )
 
@@ -30,8 +31,11 @@ func (s *StubItemStore) GetItem(id int) *model.Item {
 	return s.findItem(id)
 }
 
-func (s *StubItemStore) GetItems() *[]model.Item {
-	items := *s.Todo
+func (s *StubItemStore) GetItems(completed bool) *[]model.Item {
+	items := *slices.Filter(s.Todo, func (i int) bool  {
+		return (*s.Todo)[i].Completed == completed
+	})
+
 	sort.Slice(items, func (i int, j int) bool  {
 		return items[i].Order < items[j].Order
 	})

@@ -6,7 +6,9 @@ import (
 	"io"
 	"os"
 	"sort"
+	"time"
 
+	"github.com/foxbit19/todo-app/server/helpers/slices"
 	"github.com/foxbit19/todo-app/server/model"
 	"github.com/foxbit19/todo-app/server/store/utils"
 )
@@ -48,10 +50,23 @@ func (s *FileSystemStore) GetItem(id int) *model.Item {
 
 // GetItems gets all the items into database.
 // It returns a pointer to the slice of the items.
-func (s *FileSystemStore) GetItems() *[]model.Item {
-	items := s.items
+func (s *FileSystemStore) GetItems(completed bool) *[]model.Item {
+	// filter the items using completed argument
+	items := *slices.Filter(&s.items, func (i int) bool  {
+		return s.items[i].Completed == completed
+	})
+
 	sort.Slice(items, func (i int, j int) bool  {
-		return items[i].Order < items[j].Order
+		if completed {
+			// if only completed items are requestes
+			// the order function works on date
+			date1, _ := time.Parse(time.RFC822Z, items[i].CompletedDate)
+			date2, _ := time.Parse(time.RFC822Z, items[j].CompletedDate)
+			return date1.After(date2)
+		} else {
+			// otherwise, the order function works on order
+			return items[i].Order < items[j].Order
+		}
 	})
 
 	return &items
@@ -90,6 +105,8 @@ func (s *FileSystemStore) UpdateItem(id int, item *model.Item) error {
 
 	found.Description = item.Description
 	found.Order = item.Order
+	found.Completed = item.Completed
+	found.CompletedDate = item.CompletedDate
 
 	encodeDatabase(&s.items, s.Database)
 
@@ -178,7 +195,7 @@ func decodeDatabase(database io.Reader) ([]model.Item, error) {
 	err := json.NewDecoder(database).Decode(&items)
 
 	if err != nil {
-		err = fmt.Errorf("Unable to parse JSON response %v", err)
+		err = fmt.Errorf("Unable to decode JSON %v", err)
 	}
 
 	return items, err
