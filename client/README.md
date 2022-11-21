@@ -4,45 +4,62 @@ This client is implemented in React.
 
 The ToDo App offers a simple way to manage a list of tasks someone needs to complete or things that someone wants to do.
 
-## Available Scripts
+## Introduction
+This react application is very simple. It contains the less code to work properly and to satisfy the requirement.
 
-In the project directory, you can run:
+Despite that, I wanted to develop it well using `react 18`, `typescript` and 2 strong libraries that I'd love:
 
-### `npm start`
+- `material-ui`, and
+- `react-beautiful-dnd`.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The first, provided by the package `@mui/material`, was a huge collection of nice looking components ready to go.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The second is a library to provide drag & drop (dnd) operation on graphical component.
+With this library I've encountered some issue (because it's not maintained well and I've used React 18) so I've integrated it with the package `@hello-pangea/dnd` that provides support for react 18.
 
-### `npm test`
+I hope this application enjoy you, as I've enjoyed myself during its development.
+## App structure
+`src` is the main folder for source code and test files. All the test files were written in the same directory of the components.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `src/components` contains all the component of the application, some were written for maximum readability (like `GenericDialog`), others for code separation and maintainability;
+- `src/models` contains the model `Item` used by the application to store the field of an item and the adapter `ItemAdapter` to adapt json results from the server to the local model;
+- `src/services` contains all the code necessary to interact with the server:
+  - `service.ts` contains an interface that works as a guide for all service implementations. I've used generics to develop this one: a service that implements `Service` needs to specify a type to map argument and returns of its typed functions.
+  - `itemService.ts` contains the class `ItemService` that implements `Service` with type `Item`
+  - `completedItemService.ts` contains the class `CompletedItemService` that implements `Service` with type `Item`. Even if this interface does not use different typed argument respect `ItemService` it was created to show the potential of a different implementation and to separate concern. It works only with completed items. It could be extended in the future to interact only with this kind of elements avoiding to create out-of-scope function inside `ItemService`;
 
-### `npm run build`
+## Usage
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Install
+Install the dependencies using the command
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Start the application
 
-### `npm run eject`
+Start the application using the command
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+npm start
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Environment
+As for `.env` files it uses `http://localhost:8080` as base url and it exposes port `3000` by default.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Testing
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+All the test use `jest` for component testing. It's a way to test the behaviour of isolated components but it's not an end-to-end test.
 
-## Learn More
+#### How to test
+Launch the test using the command
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run test
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Improvements
+There are one big improvement to this application: end-to-end tests.
+
+It is possible to integrate these tests using framework like `cypress.js`. I've made some experiments but I've encountered some issues caused by `tsconfig.json` configuration.
