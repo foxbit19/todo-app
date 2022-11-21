@@ -1,8 +1,8 @@
-# ToDo App - client
+# Easy to do - client
 
 This client is implemented in React.
 
-The ToDo App offers a simple way to manage a list of tasks someone needs to complete or things that someone wants to do.
+The Easy to do offers a simple way to manage a list of tasks someone needs to complete or things that someone wants to do.
 
 ## Introduction
 This react application is very simple. It contains the less code to work properly and to satisfy the requirement.

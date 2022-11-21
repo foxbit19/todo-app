@@ -1,4 +1,4 @@
-# ToDo App - server
+# Easy to do - server
 
 This server is implemented in Go.
 
