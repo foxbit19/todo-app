@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 
 	"github.com/foxbit19/todo-app/server/model"
@@ -27,8 +28,14 @@ func (i *Item) Get(id int) *model.Item {
 }
 
 // GetAll gets all items using the store
-func (i *Item) GetAll() *[]model.Item {
-	return i.store.GetItems(false)
+func (i *Item) GetAll(completed bool) *[]model.Item {
+	items := i.store.GetItems(completed)
+
+	if reflect.ValueOf(*items).IsNil() {
+		items = &[]model.Item{}
+	}
+
+	return items
 }
 
 // Create creates a new item using description
@@ -81,7 +88,7 @@ func (i *Item) Reorder(sourceId int, targetId int) {
 	// to avoid store with memory storage
 	sourceOrder := source.Order
 	targetOrder := target.Order
-	items := *i.GetAll()
+	items := *i.GetAll(false)
 
 
 	// this loop works only on the items in the reorder range:

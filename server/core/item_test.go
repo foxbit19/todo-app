@@ -2,6 +2,7 @@ package core
 
 import (
 	"testing"
+	"time"
 
 	"github.com/foxbit19/todo-app/server/model"
 	"github.com/foxbit19/todo-app/server/store"
@@ -26,11 +27,17 @@ func TestBusinessLogic(t *testing.T) {
 		assert.DeepEqual(t, *got, want)
 	})
 
-	t.Run("it gets all items", func(t *testing.T) {
+	t.Run("it gets all live items", func(t *testing.T) {
 		store = testingCommon.NewStubItemStore()
 		core := NewItem(store)
 
-		got := core.GetAll()
+		item := core.Create("my item to complete")
+		item.Completed = true
+		item.CompletedDate = time.Now().Format(time.RFC822Z)
+
+		core.Update(item)
+
+		got := core.GetAll(false)
 		want := []model.Item{
 			{
 				Id:          1,
@@ -41,6 +48,32 @@ func TestBusinessLogic(t *testing.T) {
 				Id:          2,
 				Description: "this is my second todo",
 				Order:       2,
+			},
+		}
+
+		assert.DeepEqual(t, *got, want)
+	})
+
+	t.Run("it gets all completed items", func(t *testing.T) {
+		store = testingCommon.NewStubItemStore()
+		core := NewItem(store)
+
+		completedDate := time.Now().Format(time.RFC822Z)
+
+		item := core.Create("my item to complete")
+		item.Completed = true
+		item.CompletedDate = completedDate
+
+		core.Update(item)
+
+		got := core.GetAll(true)
+		want := []model.Item{
+			{
+				Id:          3,
+				Description: "my item to complete",
+				Order:       3,
+				Completed: true,
+				CompletedDate: completedDate,
 			},
 		}
 
@@ -58,7 +91,13 @@ func TestBusinessLogic(t *testing.T) {
 				Order:       3,
 			}
 
-		assert.DeepEqual(t, *got, want)
+		assert.Equal(t, got.Id, want.Id)
+		assert.Equal(t, got.Description, want.Description)
+		assert.Equal(t, got.Order, want.Order)
+		assert.Equal(t, got.Completed, want.Completed)
+		// completed date default value needs to be in the correct format (RFC822Z)
+		_, err := time.Parse(time.RFC822Z,got.CompletedDate)
+		assert.NilError(t, err)
 	})
 
 	t.Run("it creates an item with a default order that is the max of existing orders", func(t *testing.T) {
@@ -111,7 +150,7 @@ func TestBusinessLogic(t *testing.T) {
 
 		core.Reorder(source.Id, target.Id)
 
-		got := core.GetAll()
+		got := *core.GetAll(false)
 
 		want := []model.Item{
 			{
@@ -136,7 +175,10 @@ func TestBusinessLogic(t *testing.T) {
 			},
 		}
 
-		assert.DeepEqual(t, *got, want)
+		for i := 0; i < len(got); i++ {
+			assert.Equal(t, got[i].Id, want[i].Id)
+			assert.Equal(t, got[i].Order, want[i].Order)
+		}
 	})
 
 	t.Run("it lowers the priority of an item changing its order", func(t *testing.T) {
@@ -151,7 +193,7 @@ func TestBusinessLogic(t *testing.T) {
 
 		core.Reorder(source.Id, target.Id)
 
-		got := core.GetAll()
+		got := *core.GetAll(false)
 
 		want := []model.Item{
 			{
@@ -176,6 +218,9 @@ func TestBusinessLogic(t *testing.T) {
 			},
 		}
 
-		assert.DeepEqual(t, *got, want)
+		for i := 0; i < len(got); i++ {
+			assert.Equal(t, got[i].Id, want[i].Id)
+			assert.Equal(t, got[i].Order, want[i].Order)
+		}
 	})
 }

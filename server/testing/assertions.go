@@ -14,8 +14,14 @@ func NewGetTodoRequest(id int) *http.Request {
 	return request
 }
 
-func NewGetAllTodosRequest() *http.Request {
-	request, _ := http.NewRequest(http.MethodGet, "/items/", nil)
+func NewGetAllTodosRequest(completed bool) *http.Request {
+	path := "/items/"
+
+	if completed {
+		path += "completed/"
+	}
+
+	request, _ := http.NewRequest(http.MethodGet, path, nil)
 	return request
 }
 

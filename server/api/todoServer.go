@@ -27,6 +27,7 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", s.welcomeHandler).Methods(http.MethodGet)
 	router.HandleFunc("/items/", s.showItems).Methods(http.MethodGet)
+	router.HandleFunc("/items/completed/", s.showCompletedItems).Methods(http.MethodGet)
 	router.HandleFunc("/items/{id}", s.showItem).Methods(http.MethodGet)
 	router.HandleFunc("/items/", s.storeItem).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/items/{id}", s.updateItem).Methods(http.MethodPut, http.MethodOptions)
@@ -63,10 +64,16 @@ func (s *TodoServer) welcomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Great scott! Welcome to ToDo server!"))
 }
 
-// showItems returns all the todo items stored into the store
+// showItems returns all the todo items that are not completed
 func (s *TodoServer) showItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(s.store.GetItems())
+	json.NewEncoder(w).Encode(core.NewItem(s.store).GetAll(false))
+}
+
+// showItems returns all the completed todo items
+func (s *TodoServer) showCompletedItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(core.NewItem(s.store).GetAll(true))
 }
 
 // showItem returns the item that match id argument

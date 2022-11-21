@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
+	"time"
 
 	"github.com/foxbit19/todo-app/server/model"
 	testingCommon "github.com/foxbit19/todo-app/server/testing"
@@ -42,9 +42,7 @@ func assertAndGetAllJsonResponse(t *testing.T, b *bytes.Buffer, todo *[]model.It
 		t.Errorf("Unable to parse JSON response %q: %v", b, err)
 	}
 
-	if !reflect.DeepEqual(got, *todo) {
-		t.Errorf("got %q, want %q", got, *todo)
-	}
+	assert.DeepEqual(t, got, *todo)
 }
 
 func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
@@ -70,23 +68,8 @@ func TestBasicServer(t *testing.T)  {
 }
 
 func TestGETTodoItem(t *testing.T) {
-	store := testingCommon.StubItemStore{
-		&[]model.Item{
-			{
-				Id:          1,
-				Description: "this is my first todo",
-				Order:       1,
-			},
-			{
-				Id:          2,
-				Description: "this is my second todo",
-				Order:       2,
-			},
-		},
-	}
-	server := NewTodoServer(&store)
-
 	t.Run("returns the first todo item", func(t *testing.T) {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
 		request := testingCommon.NewGetTodoRequest(1)
 		response := httptest.NewRecorder()
 
@@ -99,6 +82,7 @@ func TestGETTodoItem(t *testing.T) {
 	})
 
 	t.Run("returns the second todo item", func(t *testing.T) {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
 		request := testingCommon.NewGetTodoRequest(2)
 		response := httptest.NewRecorder()
 
@@ -111,6 +95,7 @@ func TestGETTodoItem(t *testing.T) {
 	})
 
 	t.Run("returns 404 on missing item", func(t *testing.T) {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
 		request := testingCommon.NewGetTodoRequest(0)
 		response := httptest.NewRecorder()
 
@@ -120,6 +105,7 @@ func TestGETTodoItem(t *testing.T) {
 	})
 
 	t.Run("returns 400 on string todo id", func(t *testing.T) {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
 		request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/items/%s", "crazy"), nil)
 		response := httptest.NewRecorder()
 
@@ -128,15 +114,35 @@ func TestGETTodoItem(t *testing.T) {
 		assert.Equal(t, response.Code, http.StatusBadRequest)
 	})
 
-	t.Run("Returns all todo items as JSON array", func(t *testing.T) {
-		request := testingCommon.NewGetAllTodosRequest()
+	t.Run("Returns all todo live items as JSON array", func(t *testing.T) {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
+
+		item := server.store.GetItem(1)
+		item.Completed = true
+		item.CompletedDate = time.Now().Format(time.RFC822Z)
+
+		server.store.UpdateItem(1, item)
+
+		request := testingCommon.NewGetAllTodosRequest(false)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
 		assert.Equal(t, response.Code, http.StatusOK)
 		assertContentType(t, response, "application/json")
-		assertAndGetAllJsonResponse(t, response.Body, store.Todo)
+		assertAndGetAllJsonResponse(t, response.Body, server.store.GetItems(false))
+	})
+
+	t.Run("Returns all completed todo items as JSON array", func(t *testing.T) {
+		server := NewTodoServer(testingCommon.NewStubItemStore())
+		request := testingCommon.NewGetAllTodosRequest(true)
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assert.Equal(t, response.Code, http.StatusOK)
+		assertContentType(t, response, "application/json")
+		assertAndGetAllJsonResponse(t, response.Body, server.store.GetItems(true))
 	})
 }
 
@@ -171,9 +177,7 @@ func TestStoreTodoItems(t *testing.T) {
 		got := server.store.GetItem(1)
 		want := "new todo item"
 
-		if got.Description != want {
-			t.Errorf("got %q, want %q", got, want)
-		}
+		assert.Equal(t, got.Description, want)
 	})
 }
 
@@ -190,7 +194,7 @@ func TestUpdateTodoItem(t *testing.T)  {
 
 		err := json.NewEncoder(buffer).Encode(body)
 		if err != nil {
-			t.Errorf("Unable to encode JSON %q: %v", body, err)
+			t.Errorf("Unable to encode JSON %v: %v", body, err)
 		}
 
 		request, _ := http.NewRequest(http.MethodPut, "/items/2", buffer)
@@ -210,7 +214,7 @@ func TestUpdateTodoItem(t *testing.T)  {
 		body, buffer := map[string]string{"description": "123123"}, new(bytes.Buffer)
 		err := json.NewEncoder(buffer).Encode(body)
 		if err != nil {
-			t.Errorf("Unable to encode JSON %q: %v", body, err)
+			t.Errorf("Unable to encode JSON %v: %v", body, err)
 		}
 
 		request, _ := http.NewRequest(http.MethodPut, "/items/76", buffer)

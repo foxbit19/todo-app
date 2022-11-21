@@ -3,6 +3,7 @@ package testing
 import (
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/foxbit19/todo-app/server/helpers/slices"
 	"github.com/foxbit19/todo-app/server/model"
@@ -37,6 +38,19 @@ func (s *StubItemStore) GetItems(completed bool) *[]model.Item {
 	})
 
 	sort.Slice(items, func (i int, j int) bool  {
+		if completed {
+			// if only completed items are requestes
+			// the order function works on date
+			date1, _ := time.Parse(time.RFC822Z, items[i].CompletedDate)
+			date2, _ := time.Parse(time.RFC822Z, items[j].CompletedDate)
+			return date1.After(date2)
+		} else {
+			// otherwise, the order function works on order
+			return items[i].Order < items[j].Order
+		}
+	})
+
+	sort.Slice(items, func (i int, j int) bool  {
 		return items[i].Order < items[j].Order
 	})
 
@@ -49,6 +63,7 @@ func (s *StubItemStore) StoreItem(description string, order int) int {
 		Id:          id,
 		Description: description,
 		Order:       order,
+		CompletedDate: time.Now().Format(time.RFC822Z),
 	})
 
 	s.Todo = &todo
@@ -65,6 +80,9 @@ func (s *StubItemStore) UpdateItem(id int, item *model.Item) error {
 
 	found.Description = item.Description
 	found.Order = item.Order
+	found.Completed = item.Completed
+	found.CompletedDate = item.CompletedDate
+
 	return nil
 }
 
