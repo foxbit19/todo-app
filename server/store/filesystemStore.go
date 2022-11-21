@@ -63,7 +63,7 @@ func (s *FileSystemStore) GetItems() *[]model.Item {
 func (s *FileSystemStore) StoreItem(description string, order int) int {
 	id := len(s.items) + 1
 	s.items = append(s.items, model.Item{
-		Id:          len(s.items) + 1,
+		Id:          s.findMaxItemId() + 1,
 		Description: description,
 		Order:       order,
 	})
@@ -151,6 +151,20 @@ func (s *FileSystemStore) findItemIndex(id int) int {
 	}
 
 	return -1
+}
+
+// finMaxItemId find the maximum index used by all
+// the items of the store
+func (s *FileSystemStore) findMaxItemId() int {
+	max := 0;
+
+	for i := 0; i < len(s.items); i++ {
+		if s.items[i].Id > max {
+			max = s.items[i].Id
+		}
+	}
+
+	return max
 }
 
 // decodeDatabase is a private function to decode the database of
