@@ -11,15 +11,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func loadEnvFile() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-  	}
-}
-
 func main()  {
-	loadEnvFile()
+	godotenv.Load()
 	database, err := os.OpenFile(fmt.Sprintf("./db/%s", os.Getenv("DB_FILE_NAME")), os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
