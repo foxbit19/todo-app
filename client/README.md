@@ -18,7 +18,7 @@ The second is a library to provide drag & drop (dnd) operation on graphical comp
 With this library I've encountered some issue (because it's not maintained well and I've used React 18) so I've integrated it with the package `@hello-pangea/dnd` that provides support for react 18.
 
 I hope this application enjoy you, as I've enjoyed myself during its development.
-## App structure
+## Structure
 `src` is the main folder for source code and test files. All the test files were written in the same directory of the components.
 
 - `src/components` contains all the component of the application, some were written for maximum readability (like `GenericDialog`), others for code separation and maintainability;
