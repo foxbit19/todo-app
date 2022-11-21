@@ -26,7 +26,7 @@ An item is an object with the following fields:
 - `completedDate` a string object in `RFC822Z` format.
 
 ## Docker compose
-I've used multi env `Dockerfile` to avoid loading source file into docker images. You can find more info into the dockerfiles.
+I used multi env `Dockerfile` to avoid loading source file into docker images. You can find more info into the dockerfiles.
 
 You can run client and server application with one command using docker compose:
 

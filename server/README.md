@@ -6,7 +6,7 @@ Items can be added, removed, updated and listed.
 
 ## Introduction
 I never developed in Golang but I wanted to do the best work possible.
-I've created a three-layer structure to separated these concerns:
+I created a three-layer structure to separated these concerns:
 
 - *handler*
 - *business logic*
@@ -14,11 +14,11 @@ I've created a three-layer structure to separated these concerns:
 
 ![layers](./layers.png)
 
-I've tried to made each layer independent from the others.
+I tried to made each layer independent from the others.
 In that way there could be a lot of independent improvements and different implementations.
 
 ### A note about the store
-I've choose to store every todo in item in a simple file system store. This choise was made for time-boundary constraints but I think this is a good choise for an app like this. Despite this, I've created a store interface, useful for future implementations, like a DBMS store.
+I choose to store every todo in item in a simple file system store. This choise was made for time-boundary constraints but I think this is a good choise for an app like this. Despite this, I created a store interface, useful for future implementations, like a DBMS store.
 
 ## Structure
 - `api` contains the tests and the source code of the handler layer:
@@ -74,7 +74,7 @@ As for `.env` files it uses `database.json` as default database name and it uses
 
 ### Testing
 
-I've used the standard go library for testing and `assert` package for assertions. There are no integration tests.
+I used the standard go library for testing and `assert` package for assertions. There are no integration tests.
 
 #### How to test
 Launch the test using the command
