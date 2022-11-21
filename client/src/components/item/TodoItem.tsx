@@ -1,7 +1,7 @@
 import React from 'react'
 import Item from '../../models/item'
 import { Draggable } from '@hello-pangea/dnd'
-import { Box, Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, styled, Typography } from '@mui/material'
+import { Checkbox, ListItem, Paper, styled, Typography } from '@mui/material'
 import CircleIcon from '@mui/icons-material/Circle'
 import CheckIcon from '@mui/icons-material/CheckCircle'
 
