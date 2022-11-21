@@ -13,7 +13,7 @@ interface Props {
 const DeleteTodo = (props: Props) => {
     return (
         <GenericDialog open={props.open}
-            title='Are you sure to delete this item?'
+            title='Are you sure you want to delete this item?'
             text={props.item.description}
             button={<Button onClick={() => props.onDeleteClick && props.onDeleteClick(props.item)}>Yes</Button>}
             onClose={props.onClose}
