@@ -1,7 +1,9 @@
 import React from 'react'
 import { AppBar, Box, Button, Container, Grid, Toolbar, Typography } from '@mui/material'
 
-interface Props { }
+interface Props {
+    onShowCompletedClick: () => void
+}
 
 const Appbar = (props: Props) => {
     return (
@@ -10,7 +12,7 @@ const Appbar = (props: Props) => {
                 <Typography variant="h5" style={{ color: 'black', fontFamily: 'Satisfy' }} fontWeight='bold' flexGrow={1}>
                     Easy to do
                 </Typography>
-                <Button sx={{ color: 'black', marginLeft: 5 }}>
+                <Button sx={{ color: 'black', marginLeft: 5 }} onClick={props.onShowCompletedClick}>
                     show completed
                 </Button>
             </Toolbar>

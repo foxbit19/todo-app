@@ -1,59 +1,12 @@
 import HTTPMethod from 'http-method-enum';
 import Item from '../models/item';
 import ItemAdapter from '../models/itemAdapter';
+import { Testing } from '../testing/common';
 import ItemService from './itemService';
-
-/**
- * A support interface to collect request argument
- * for testing purposes
- */
-interface MockRequest<T> {
-    method: string,
-    queryString?: string,
-    body?: T
-}
-
-/**
- * A support interface to collect response argument
- * for testing purposes
- */
-interface MockResponse<T> {
-    status: number,
-    body?: T
-}
 
 describe('Item service', () => {
     const itemMock1: Item = new Item(1, 'This is my beautiful todo', 1)
     const itemMock2: Item = new Item(2, 'This is my incredible todo', 3)
-
-    const findQueryString = (url: RequestInfo | URL): string => {
-        const split = url.toString().split('/')
-        return split[split.length - 1];
-    }
-
-    const getMockImplementation = <T, K>(request: MockRequest<T>, response: MockResponse<K>) => {
-        return (input: RequestInfo | URL, init?: RequestInit) => {
-            // check if the method is correct
-            if (init?.method !== request.method) {
-                throw new Error('Wrong HTTP method')
-            }
-
-            // check if the queryString is correct, if any
-            if (request.queryString && findQueryString(input) !== request.queryString) {
-                throw new Error('Wrong query string')
-            }
-
-            // check if the body is correct, if it is present
-            if (request.body && init?.body !== JSON.stringify(request.body)) {
-                throw new Error('Wrong Body provided')
-            }
-
-            return Promise.resolve({
-                status: response.status,
-                json: async () => response.body
-            } as Response)
-        };
-    }
 
     afterEach(() => {
         jest.restoreAllMocks()
@@ -61,7 +14,7 @@ describe('Item service', () => {
 
     describe('gets an item', () => {
         test('it gets an item from the server', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, ItemAdapter>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, ItemAdapter>(
                 {
                     method: HTTPMethod.GET,
                     queryString: '1'
@@ -74,11 +27,11 @@ describe('Item service', () => {
 
             const service = new ItemService();
             const response = await service.get(1)
-            expect(response).toEqual(itemMock1)
+            expect(response.id).toEqual(itemMock1.id)
         })
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, ItemAdapter>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, ItemAdapter>(
                 {
                     method: HTTPMethod.GET,
                     queryString: '1'
@@ -96,7 +49,7 @@ describe('Item service', () => {
 
     describe('get all items', () => {
         test('it gets all items from the server', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, ItemAdapter[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, ItemAdapter[]>(
                 {
                     method: HTTPMethod.GET
                 },
@@ -107,12 +60,16 @@ describe('Item service', () => {
             ))
             const service = new ItemService();
             const response = await service.getAll()
-            expect(response).toEqual([itemMock1, itemMock2])
+
+            const want = [itemMock1, itemMock2]
+
+            for (let i = 0; i < response.length; i++) {
+                expect(response[i].id).toEqual(want[i].id)
+            }
         })
 
-
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.GET
                 },
@@ -129,7 +86,7 @@ describe('Item service', () => {
 
     describe('create an item', () => {
         test('it creates a new item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item>(
                 {
                     method: HTTPMethod.POST,
                     body: itemMock1
@@ -146,7 +103,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.POST
                 },
@@ -162,11 +119,11 @@ describe('Item service', () => {
 
     describe('update an item', () => {
         test('it updates a new item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<ItemAdapter, Item>(
                 {
                     method: HTTPMethod.PUT,
                     queryString: itemMock1.id.toString(),
-                    body: itemMock1,
+                    body: ItemAdapter.create(itemMock1),
                 },
                 {
                     status: 202,
@@ -180,7 +137,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.PUT,
                     queryString: itemMock1.id.toString()
@@ -197,7 +154,7 @@ describe('Item service', () => {
 
     describe('delete an item', () => {
         test('it delets a new item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item>(
                 {
                     method: HTTPMethod.DELETE,
                     queryString: '1'
@@ -214,7 +171,7 @@ describe('Item service', () => {
 
 
         test('it throws an error if response status is different from 200', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item[]>(
                 {
                     method: HTTPMethod.DELETE,
                     queryString: '1'
@@ -231,7 +188,7 @@ describe('Item service', () => {
 
     describe('reorder an item', () => {
         test('it rises the priority of an item', async () => {
-            jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item>(
+            jest.spyOn(global, 'fetch').mockImplementation(Testing.Common.getMockImplementation<Item, Item>(
                 {
                     method: HTTPMethod.PATCH,
                 },
@@ -244,21 +201,5 @@ describe('Item service', () => {
             const response = await service.reorder(2, 1)
             expect(response).toEqual(2)
         })
-
-        /*
-                test('it throws an error if response status is different from 200', async () => {
-                    jest.spyOn(global, 'fetch').mockImplementation(getMockImplementation<Item, Item[]>(
-                        {
-                            method: HTTPMethod.DELETE,
-                            queryString: '1'
-                        },
-                        {
-                            status: 400,
-                        }
-                    ))
-
-                    const service = new ItemService();
-                    await expect(service.delete(1)).rejects.toThrowError('Could not delete this item: 1');
-                }) */
     })
 })

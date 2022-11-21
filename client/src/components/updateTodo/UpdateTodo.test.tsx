@@ -32,12 +32,6 @@ describe('update todo', () => {
         expect(screen.getByText('Item update')).toBeInTheDocument()
     })
 
-    test('it shows the description of the provided item into an input box', () => {
-        render(<UpdateTodo open={true} item={item} />)
-
-        expect(screen.getByText(item.description)).toBeInTheDocument()
-    })
-
     test('it launch an event when the update button is pressed', () => {
         const updateHandler = sinon.spy();
 

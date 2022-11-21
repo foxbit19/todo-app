@@ -10,6 +10,8 @@ import AppContainer from './components/container/AppContainer';
 import DeleteTodo from './components/deleteTodo/DeleteTodo';
 import Footer from './components/footer/Footer';
 import Appbar from './components/appbar/Appbar';
+import CompletedTodos from './components/completedTodos/CompletedTodos';
+import CompletedItemService from './services/completedItemService';
 
 const darkTheme = createTheme({
     palette: {
@@ -22,12 +24,15 @@ const darkTheme = createTheme({
 
 function App() {
     const [items, setItems] = useState<Item[]>([])
+    const [completedItems, setCompletedItems] = useState<Item[]>([])
     const [showNew, setShowNew] = useState<boolean>(false)
     const [showUpdate, setShowUpdate] = useState<boolean>(false)
     const [showDelete, setShowDelete] = useState<boolean>(false)
+    const [showCompleted, setShowCompleted] = useState<boolean>(false)
     const [item, setItem] = useState<Item>()
     const [alert, setAlert] = useState<JSX.Element>(<></>)
-    const service = new ItemService()
+    const itemService = new ItemService()
+    const completedItemService = new CompletedItemService()
 
     const buildAlert = (severity: AlertColor, title: string, message: string) => (
         <Alert severity={severity} onClose={() => { setAlert(<></>) }}>
@@ -37,7 +42,7 @@ function App() {
     )
 
     const getAllItems = async () => {
-        setItems(await service.getAll())
+        setItems(await itemService.getAll())
     }
 
     useEffect(() => {
@@ -48,6 +53,7 @@ function App() {
         setShowDelete(false)
         setShowUpdate(false)
         setShowNew(false)
+        setShowCompleted(false)
     }
 
     const openNewModal = () => {
@@ -64,9 +70,19 @@ function App() {
         setShowDelete(true)
     }
 
+    const openCompletedModal = async () => {
+        try {
+            setCompletedItems(await completedItemService.getAll())
+            setShowCompleted(true)
+        } catch (error) {
+            console.error(error)
+            setAlert(buildAlert('error', 'Show completed fails', 'An error occurs during the download of the completed items'))
+        }
+    }
+
     const handleUpdate = async (item: Item) => {
         try {
-            await service.update(item)
+            await itemService.update(item)
             setAlert(buildAlert('success', 'Item updated', 'Your item was updated successfully'))
             getAllItems()
         } catch (error: any) {
@@ -81,7 +97,7 @@ function App() {
 
     const handleDelete = async (item: Item) => {
         try {
-            await service.delete(item.id)
+            await itemService.delete(item.id)
             setAlert(buildAlert('success', 'Item deleted', 'Your item was deleted successfully'))
             getAllItems()
         } catch (error: any) {
@@ -95,7 +111,7 @@ function App() {
 
     const handleSave = async (description: string) => {
         try {
-            await service.create(new Item(- 1, description, -1))
+            await itemService.create(new Item(- 1, description, -1))
             setAlert(buildAlert('success', 'Item added', 'Your item was added into the todo list'))
             getAllItems()
         } catch (error: any) {
@@ -108,7 +124,7 @@ function App() {
 
     const handleReorder = async (sourceIndex: number, targetIndex: number) => {
         try {
-            await service.reorder(items[sourceIndex].id, items[targetIndex].id)
+            await itemService.reorder(items[sourceIndex].id, items[targetIndex].id)
             getAllItems()
         } catch (error: any) {
             console.error(error)
@@ -122,7 +138,7 @@ function App() {
         try {
             item.completed = true
             item.completedDate = new Date()
-            await service.update(item)
+            await itemService.update(item)
             getAllItems()
         } catch (error: any) {
             console.error(error)
@@ -135,7 +151,7 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
-            <Appbar />
+            <Appbar onShowCompletedClick={openCompletedModal} />
             <AppContainer>
                 <div>
                     {alert}
@@ -153,6 +169,7 @@ function App() {
                     {<NewTodo open={showNew} onClose={handleClose} onSaveClick={handleSave} />}
                     {item && <UpdateTodo open={showUpdate} item={item} onClose={handleClose} onUpdateClick={handleUpdate} />}
                     {item && <DeleteTodo open={showDelete} item={item} onClose={handleClose} onDeleteClick={handleDelete} />}
+                    <CompletedTodos items={completedItems} open={showCompleted} onClose={handleClose} />
                 </div>
             </AppContainer>
         </ThemeProvider>

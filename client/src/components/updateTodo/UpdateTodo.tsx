@@ -33,7 +33,7 @@ const UpdateTodo = (props: Props) => {
     return (
         <GenericDialog open={props.open}
             title='Item update'
-            text={'Enter the todo description in order to update it.'}
+            text={'Edit the todo description in order to update it.'}
             button={<Button data-testid='update_button' variant='contained' onClick={handleUpdateClick}>Update</Button>}
             onClose={props.onClose}>
             <TextField autoFocus required fullWidth margin='dense' label='Description' data-testid='description' value={inputValue} onChange={handleChange} variant='standard' />

@@ -5,42 +5,78 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <ul
-        class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
-        data-rbd-droppable-context-id="0"
-        data-rbd-droppable-id="0"
-        data-testid="list"
-      />
-      <div>
-        There are no todos to show
+      <div
+        style="margin-top: 2em;"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-91853l-MuiGrid-root"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+              data-testid="InfoIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+              />
+            </svg>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
+          >
+            <h6
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-alignCenter css-avn1fp-MuiTypography-root"
+            >
+              You can add, edit, delete and mark as complete an item. Drag an item over the list to change its priority.
+            </h6>
+          </div>
+        </div>
+        <div>
+          There are no todos to show
+        </div>
       </div>
-    </div>
-    <div
-      aria-atomic="true"
-      aria-live="assertive"
-      id="rbd-announcement-0"
-      style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%);"
-    />
-    <div
-      id="rbd-hidden-text-0-hidden-text-0"
-      style="display: none;"
-    >
-      
-  Press space bar to start a drag.
-  When dragging you can use the arrow keys to move the item around and escape to cancel.
-  Some screen readers may require you to be in focus mode or to use your pass through key
-
     </div>
   </body>,
   "container": <div>
-    <ul
-      class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
-      data-rbd-droppable-context-id="0"
-      data-rbd-droppable-id="0"
-      data-testid="list"
-    />
-    <div>
-      There are no todos to show
+    <div
+      style="margin-top: 2em;"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-91853l-MuiGrid-root"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+            data-testid="InfoIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+            />
+          </svg>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-alignCenter css-avn1fp-MuiTypography-root"
+          >
+            You can add, edit, delete and mark as complete an item. Drag an item over the list to change its priority.
+          </h6>
+        </div>
+      </div>
+      <div>
+        There are no todos to show
+      </div>
     </div>
   </div>,
   "debug": [Function],
