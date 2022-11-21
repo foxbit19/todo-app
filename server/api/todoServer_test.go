@@ -135,6 +135,13 @@ func TestGETTodoItem(t *testing.T) {
 
 	t.Run("Returns all completed todo items as JSON array", func(t *testing.T) {
 		server := NewTodoServer(testingCommon.NewStubItemStore())
+
+		item := server.store.GetItem(1)
+		item.Completed = true
+		item.CompletedDate = time.Now().Format(time.RFC822Z)
+
+		server.store.UpdateItem(1, item)
+
 		request := testingCommon.NewGetAllTodosRequest(true)
 		response := httptest.NewRecorder()
 
