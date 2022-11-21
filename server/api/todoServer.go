@@ -31,7 +31,7 @@ func NewTodoServer(store store.ItemStore) *TodoServer {
 	router.HandleFunc("/items/", s.storeItem).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/items/{id}", s.updateItem).Methods(http.MethodPut, http.MethodOptions)
 	router.HandleFunc("/items/{id}", s.deleteItem).Methods(http.MethodDelete, http.MethodOptions)
-	router.HandleFunc("/reorder/{sourceId}/{targetId}", s.reorderItem).Methods(http.MethodPatch, http.MethodOptions)
+	router.HandleFunc("/items/reorder/{sourceId}/{targetId}", s.reorderItem).Methods(http.MethodPatch, http.MethodOptions)
 	router.Use(toDoServerCorsMiddleware(router))
 	//router.Use(mux.CORSMethodMiddleware(router))
 	s.Handler = router
