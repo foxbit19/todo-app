@@ -47,7 +47,7 @@ export default class ItemService implements Service<Item> {
     }
 
     async update(item: Item): Promise<Item> {
-        const response = await fetch(`${this.getBaseUrl()}/items/${item.id}`, { method: HTTPMethod.PUT, body: JSON.stringify(item) })
+        const response = await fetch(`${this.getBaseUrl()}/items/${item.id}`, { method: HTTPMethod.PUT, body: JSON.stringify(ItemAdapter.create(item)) })
 
         if (response.status === 202) {
             return item

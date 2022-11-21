@@ -1,5 +1,6 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material'
 import React, { useState } from 'react'
+import { Button, TextField } from '@mui/material'
+import GenericDialog from '../dialog/GenericDialog'
 
 interface Props {
     open: boolean,
@@ -25,19 +26,15 @@ const NewTodo = (props: Props) => {
         setInputValue('')
     }
 
-    return <Dialog open={props.open} onClose={props.onClose} maxWidth={'lg'}>
-        <DialogTitle>New todo</DialogTitle>
-        <DialogContent>
-            <DialogContentText>
-                Enter a description for your new todo item.
-            </DialogContentText>
+    return (
+        <GenericDialog open={props.open}
+            title='New todo item'
+            text={'Enter a description for your new todo item.'}
+            button={<Button data-testid='todo_save' variant='contained' onClick={handleSave}>Save</Button>}
+            onClose={props.onClose}>
             <TextField autoFocus required fullWidth margin='dense' label='Description' data-testid='todo_description' value={inputValue} onChange={handleChange} variant='standard' />
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={props.onClose}>Close</Button>
-            <Button data-testid='todo_save' variant='contained' onClick={handleSave}>Save</Button>
-        </DialogActions>
-    </Dialog>
+        </GenericDialog>
+    )
 }
 
 export default NewTodo

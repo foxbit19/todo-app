@@ -1,6 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Item from '../../models/item'
+import GenericDialog from '../dialog/GenericDialog'
 
 interface Props {
     open: boolean
@@ -22,19 +23,22 @@ const UpdateTodo = (props: Props) => {
         }
     }
 
-    return <Dialog open={props.open} onClose={props.onClose} maxWidth={'lg'}>
-        <DialogTitle>Item update</DialogTitle>
-        <DialogContent>
-            <DialogContentText>
-                Enter the todo description in order to update it.
-            </DialogContentText>
+    useEffect(() => {
+        if (props.item) {
+            setInputValue(props.item.description)
+        }
+    }, [props.item])
+
+
+    return (
+        <GenericDialog open={props.open}
+            title='Item update'
+            text={'Enter the todo description in order to update it.'}
+            button={<Button data-testid='update_button' variant='contained' onClick={handleUpdateClick}>Update</Button>}
+            onClose={props.onClose}>
             <TextField autoFocus required fullWidth margin='dense' label='Description' data-testid='description' value={inputValue} onChange={handleChange} variant='standard' />
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={props.onClose}>Close</Button>
-            <Button data-testid='update_button' variant='contained' onClick={handleUpdateClick}>Update</Button>
-        </DialogActions>
-    </Dialog >
+        </GenericDialog>
+    )
 }
 
 export default UpdateTodo

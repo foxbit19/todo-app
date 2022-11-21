@@ -1,13 +1,14 @@
 import { Alert, AlertColor, AlertTitle, createTheme, CssBaseline, Fab, ThemeProvider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import TodoList from './components/list/TodoList';
-import ShowTodo from './components/showTodo/ShowTodo';
 import Title from './components/title/Title';
 import Item from './models/item';
 import ItemService from './services/itemService';
 import UpdateTodo from './components/updateTodo/UpdateTodo';
 import AddIcon from '@mui/icons-material/Add'
 import NewTodo from './components/newTodo/NewTodo';
+import AppContainer from './components/container/AppContainer';
+import DeleteTodo from './components/deleteTodo/DeleteTodo';
 
 const darkTheme = createTheme({
     palette: {
@@ -18,8 +19,8 @@ const darkTheme = createTheme({
 function App() {
     const [items, setItems] = useState<Item[]>([])
     const [showNew, setShowNew] = useState<boolean>(false)
-    const [showTodo, setShowTodo] = useState<boolean>(false)
     const [showUpdate, setShowUpdate] = useState<boolean>(false)
+    const [showDelete, setShowDelete] = useState<boolean>(false)
     const [item, setItem] = useState<Item>()
     const [alert, setAlert] = useState<JSX.Element>(<></>)
     const service = new ItemService()
@@ -39,13 +40,8 @@ function App() {
         getAllItems()
     }, [])
 
-    const handleItemClick = (item: Item) => {
-        setItem(item)
-        setShowTodo(true)
-    }
-
     const handleClose = () => {
-        setShowTodo(false)
+        setShowDelete(false)
         setShowUpdate(false)
         setShowNew(false)
     }
@@ -55,8 +51,13 @@ function App() {
     }
 
     const openUpdateModal = async (item: Item) => {
+        setItem(item)
         setShowUpdate(true)
-        setShowTodo(false)
+    }
+
+    const openDeleteModal = async (item: Item) => {
+        setItem(item)
+        setShowDelete(true)
     }
 
     const handleUpdate = async (item: Item) => {
@@ -71,19 +72,20 @@ function App() {
             // clear the current item
             setItem(undefined)
             setShowUpdate(false)
-            setShowTodo(false)
         }
     }
 
-    const handleComplete = async (item: Item) => {
+    const handleDelete = async (item: Item) => {
         try {
             await service.delete(item.id)
+            setAlert(buildAlert('success', 'Item deleted', 'Your item was deleted successfully'))
             getAllItems()
         } catch (error: any) {
             console.error(error)
-            setAlert(buildAlert('error', 'Item complete fails', 'This item cannot be completed'))
+            setAlert(buildAlert('error', 'Item delete fails', 'This item cannot be delete'))
         } finally {
             setItem(undefined)
+            setShowDelete(false)
         }
     }
 
@@ -112,18 +114,42 @@ function App() {
         }
     }
 
+    const handleComplete = async (item: Item) => {
+        try {
+            item.completed = true
+            item.completedDate = new Date()
+            await service.update(item)
+            getAllItems()
+        } catch (error: any) {
+            console.error(error)
+            setAlert(buildAlert('error', 'Item complete fails', 'This item cannot be completed'))
+        } finally {
+            setItem(undefined)
+        }
+    }
+
     return (
         <ThemeProvider theme={darkTheme}>
             <CssBaseline />
+            <AppContainer>
+                <div>
             <Title />
             {alert}
             <Fab data-testid='new_button' color="primary" style={{ position: 'absolute', bottom: '2em', right: '2em' }} onClick={openNewModal}>
                 <AddIcon />
             </Fab>
-            <TodoList items={items} onItemClick={handleItemClick} onComplete={handleComplete} onReorder={handleReorder} />
-            {<NewTodo open={showNew} onClose={handleClose} onSaveClick={handleSave} />}
-            {item && <ShowTodo open={showTodo} item={item} onClose={handleClose} onUpdateClick={openUpdateModal} />}
+                    <TodoList
+                        items={items}
+                        onUpdate={openUpdateModal}
+                        onDelete={openDeleteModal}
+                        onComplete={handleComplete}
+                        onReorder={handleReorder}
+                    />
+                    {<NewTodo open={showNew} onClose={handleClose} onSaveClick={handleSave} />}
             {item && <UpdateTodo open={showUpdate} item={item} onClose={handleClose} onUpdateClick={handleUpdate} />}
+                    {item && <DeleteTodo open={showDelete} item={item} onClose={handleClose} onDeleteClick={handleDelete} />}
+                </div>
+            </AppContainer>
         </ThemeProvider>
     )
 }

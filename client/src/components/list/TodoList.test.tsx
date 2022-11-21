@@ -48,20 +48,7 @@ describe('todo list', () => {
         }
     })
 
-    test('it launch an event when an item is clicked', () => {
-        const items: Item[] = [
-            new Item(1, 'this is my first todo', 1),
-            new Item(2, 'this is my second todo', 2),
-        ]
-
-        const handleItemClick = sinon.spy()
-
-        render(<TodoList items={items} onItemClick={handleItemClick} />)
-        screen.getByText(items[0].description).click()
-        expect(handleItemClick.called).toBeTruthy()
-    })
-
-    test('it pass the item clicked on Item click', () => {
+/*     test('it pass the item clicked on Item click', () => {
         const items: Item[] = [
             new Item(1, 'this is my first todo', 1),
             new Item(2, 'this is my second todo', 2),
@@ -72,5 +59,5 @@ describe('todo list', () => {
         render(<TodoList items={items} onItemClick={handleItemClick} />)
         screen.getByText(items[0].description).click()
         expect(handleItemClick.calledWithExactly(items[0])).toBeTruthy()
-    })
+    }) */
 })
